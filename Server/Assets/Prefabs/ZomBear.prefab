@@ -36,6 +36,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4242172596626048}
   - component: {fileID: 95354738965344986}
+  - component: {fileID: 114860827733322440}
   m_Layer: 0
   m_Name: ZomBear
   m_TagString: Untagged
@@ -79,7 +80,7 @@ Animator:
   m_GameObject: {fileID: 1648411049611788}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: c236aa7ad6dcabe47abc7d2cf903ae71, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2cd6bf77cac24414c8e134b0c0e7aed3, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -87,6 +88,17 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 0
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114860827733322440
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1648411049611788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdb89b50fce88ce459111bfd10862523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!137 &137270978934780294
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

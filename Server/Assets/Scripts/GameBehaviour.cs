@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Cardboard;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ public class GameBehaviour : MonoBehaviour {
 
     public Game game;
     public int gridSize;
-    public GameObject playerPrefab;
+    public PlayerBehaviour playerPrefab;
 
     void Awake()
     {
@@ -14,14 +15,16 @@ public class GameBehaviour : MonoBehaviour {
 
         game.createPlayerEvent.Event += CreatePlayerEvent_Event;
 
-
-        game.AddPlayer(new Player());
-        game.AddPlayer(new Player());
+        var player1 = new Player();
+        game.AddPlayer(player1, 5, 5);
+        //player1.MovePlayer(3, 0);
+        player1.RotatePlayer(1);
     }
 
     private void CreatePlayerEvent_Event(object sender, CreatePlayerArgs e)
     {
-
+        var pl = Instantiate(playerPrefab);
+        pl.player = e.player;
     }
 
     void Start () {
