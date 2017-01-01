@@ -14,7 +14,7 @@ public class GridBehaviour : MonoBehaviour
         FindObjectOfType<GameBehaviour>().game.gridCompiledEvent.Event += DisplayGrid;
     }
 
-    public void DisplayGrid(object sender, GridCompiledEventArgs args)
+    public void DisplayGrid(object sender, GridCompiledArgs args)
     {
         if (!cell)
             return;
@@ -31,8 +31,7 @@ public class GridBehaviour : MonoBehaviour
                 current.Set(x, 0, y);
                 current.x *= offset.x;
                 current.z *= offset.z;
-                var c = Instantiate(cell);
-                cell.transform.parent = transform;
+                var c = Instantiate(cell, transform);
                 c.transform.position = start + current;
             }
         }

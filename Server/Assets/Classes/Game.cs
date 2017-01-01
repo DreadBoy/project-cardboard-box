@@ -12,14 +12,15 @@ public class Game
     Player[,] grid;
     int gridsize;
 
-    public SmartEvent<GridCompiledEventArgs> gridCompiledEvent = new SmartEvent<GridCompiledEventArgs>();
+    public SmartEvent<GridCompiledArgs> gridCompiledEvent = new SmartEvent<GridCompiledArgs>();
+    public SmartEvent<CreatePlayerArgs> createPlayerEvent = new SmartEvent<CreatePlayerArgs>();
 
     public Game(int gridsize)
     {
         grid = new Player[gridsize, gridsize];
         this.gridsize = gridsize;
 
-        gridCompiledEvent.RaiseEvent(new GridCompiledEventArgs(gridsize));
+        gridCompiledEvent.RaiseEvent(new GridCompiledArgs(gridsize));
     }
 
     public bool AddPlayer(Player player)
@@ -56,8 +57,8 @@ public class Game
             return false;
 
         players.Add(player);
-        player.position.Set(x, y, 0);
-
+        player.position = new UnityEngine.Vector3(x, y, 0);
+        createPlayerEvent.RaiseEvent(new CreatePlayerArgs(player));
 
         return true;
     }
