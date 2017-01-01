@@ -31,7 +31,8 @@ public class GridBehaviour : MonoBehaviour
                 current.Set(x, 0, y);
                 current.x *= offset.x;
                 current.z *= offset.z;
-                var c = Instantiate(cell, transform);
+                var c = Instantiate(cell);
+                cell.transform.parent = transform;
                 c.transform.position = start + current;
             }
         }
