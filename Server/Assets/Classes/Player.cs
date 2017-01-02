@@ -62,6 +62,14 @@ namespace Cardboard
             private set { }
         }
 
+        public enum State
+        {
+            waiting,
+            ready,
+            ingame
+        }
+        public State state = State.waiting;
+
         public SmartEvent<SpawnPlayerOnGridArgs> spawnPlayerOnGridEvent = new SmartEvent<SpawnPlayerOnGridArgs>();
 
         public Player()
@@ -128,6 +136,10 @@ namespace Cardboard
             if (command.type == Command.Type.TURN)
             {
                 RotatePlayer(command.number1 + command.number2);
+            }
+            if(command.type == Command.Type.READY)
+            {
+                state = State.ready;
             }
         }
 

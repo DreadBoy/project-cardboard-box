@@ -38,6 +38,6 @@ public class GameBehaviour : MonoBehaviour {
 	}
 	
 	void Update () {
-		
+        game.Update(Time.deltaTime);
 	}
 }

@@ -8,6 +8,9 @@ public class CameraBehaviour : MonoBehaviour
     public List<Vector3> positions = new List<Vector3>();
     public List<Vector3> rotations = new List<Vector3>();
 
+    LerpHelper<Vector3> lerpPosition = null;
+    LerpHelper<Quaternion> lerpRotation = null;
+
     void Start()
     {
         FindObjectOfType<GameBehaviour>().game.changeStateEvent.Event += ChangeStateEvent;
@@ -23,8 +26,8 @@ public class CameraBehaviour : MonoBehaviour
 
         if (index > -1)
         {
-            transform.position = positions[index];
-            transform.rotation = Quaternion.Euler(rotations[index]);
+            lerpPosition = new LerpHelper<Vector3>(transform.position, positions[index], Vector3.Lerp, 1.25f);
+            lerpRotation = new LerpHelper<Quaternion>(transform.rotation, Quaternion.Euler(rotations[index]), Quaternion.Lerp, 1.25f);
         }
     }
 
@@ -39,5 +42,23 @@ public class CameraBehaviour : MonoBehaviour
     public struct PointIndex
     {
         public static int lobby = 0;
+    }
+
+    void Update()
+    {
+        if (lerpPosition != null)
+        {
+            lerpPosition.Update(Time.deltaTime);
+            transform.position = lerpPosition.Lerp();
+            if (lerpPosition.Done())
+                lerpPosition = null;
+        }
+        if (lerpRotation != null)
+        {
+            lerpRotation.Update(Time.deltaTime);
+            transform.rotation = lerpRotation.Lerp();
+            if (lerpRotation.Done())
+                lerpRotation = null;
+        }
     }
 }

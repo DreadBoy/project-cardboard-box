@@ -123,6 +123,27 @@ namespace Cardboard
 
         }
 
+        float lastReady = 0;
+
+        public void Update(float deltaTime)
+        {
+            if (state == State.lobby && players.Find(pl => pl.state != Player.State.ready) == null)
+            {
+                if (lastReady < 3)
+                    lastReady += deltaTime;
+                if (lastReady >= 3)
+                {
+                    state = State.game;
+                    lastReady = 0;
+                    players.ForEach(delegate (Player player)
+                    {
+                        player.state = Player.State.ingame;
+                    });
+                    changeStateEvent.RaiseEvent(new changeStateArgs(State.game));
+                }
+            }
+        }
+
     }
 
 }
