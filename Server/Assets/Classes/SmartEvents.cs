@@ -22,12 +22,24 @@ public class SpawnPlayerOnGridArgs : EventArgs
     }
 }
 
-public class CreatePlayerArgs : EventArgs
+public class spawnPlayerOnGridArgs : EventArgs
 {
     public Player player;
 
-    public CreatePlayerArgs(Player player)
+    public spawnPlayerOnGridArgs(Player player)
     {
         this.player = player;
+    }
+}
+
+//TODO very similar name, fix that!
+
+public class CommandArgs : EventArgs
+{
+    public Command command;
+
+    public CommandArgs(Command command)
+    {
+        this.command = command;
     }
 }

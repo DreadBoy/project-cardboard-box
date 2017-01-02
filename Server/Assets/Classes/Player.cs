@@ -27,6 +27,10 @@ namespace Cardboard
                 spawnPlayerOnGridEvent.RaiseEvent(new SpawnPlayerOnGridArgs(position));
             }
         }
+        public bool IsOnSpot(int x, int y)
+        {
+            return this.x == x && this.y == y;
+        }
 
         float offsetx, offsety;
         public Vector3 offset

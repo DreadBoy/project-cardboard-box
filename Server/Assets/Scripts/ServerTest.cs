@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Cardboard;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
@@ -6,27 +7,12 @@ using UnityEngine.UI;
 
 public class ServerTest : NetworkManager
 {
-    List<NetworkConnection> connections = new List<NetworkConnection>();
     NetworkDiscovery discovery;
     
     float timer = 0;
     float count = 0;
 
-    Text Status()
-    {
-        return GameObject.Find("Status").GetComponent<Text>();
-    }
-
-    void Status(string text)
-    {
-        GameObject.Find("Status").GetComponent<Text>().text = text;
-        Debug.Log(text);
-    }
-
-    void Start()
-    {
-        StartServer();
-    }
+    List<SmartConnection> conns = new List<SmartConnection>();
 
     public override void OnStartServer()
     {
@@ -35,45 +21,25 @@ public class ServerTest : NetworkManager
         discovery.showGUI = false;
         discovery.Initialize();
         discovery.StartAsServer();
-        Status("server broadcasting");
+        Debug.Log("server broadcasting");
     }
 
     public override void OnServerConnect(NetworkConnection conn)
     {
+        //new client connected
         base.OnServerConnect(conn);
-        connections.Add(conn);
+        var sconn = new SmartConnection(conn);
+        FindObjectOfType<GameBehaviour>().game.PlayerConnect(sconn);
+        conns.Add(sconn);
         conn.Send(48, new StringMessage("Hello client!"));
-        Status("Client connected");
-        conn.RegisterHandler(49, OnCommandReceived);
+        Debug.Log("Client connected");
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         base.OnServerDisconnect(conn);
-        connections.Remove(conn);
-        Status("Client disconnected");
-    }
-
-    void OnCommandReceived(NetworkMessage netMsg)
-    {
-        var message = netMsg.ReadMessage<StringMessage>();
-        Status(message.value);
-    }
-
-    void Update()
-    {
-        if (connections.Count == 0)
-            return;
-        timer += Time.deltaTime;
-        if (timer > 1)
-        {
-            timer -= 1;
-            foreach (var conn in connections)
-            {
-                conn.Send(48, new StringMessage("Count: " + count));
-            }
-            Status("Sending " + count);
-            count++;
-        }
+        var sconn = conns.Find(sc => sc.conn == conn);
+        FindObjectOfType<GameBehaviour>().game.PlayerDisconnect(sconn);
+        Debug.Log("Client disconnected");
     }
 }

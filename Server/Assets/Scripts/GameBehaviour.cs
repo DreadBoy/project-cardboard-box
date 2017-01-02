@@ -12,16 +12,17 @@ public class GameBehaviour : MonoBehaviour {
     void Awake()
     {
         game = new Game(gridSize);
+        FindObjectOfType<ServerTest>().StartServer();
 
-        game.createPlayerEvent.Event += CreatePlayerEvent_Event;
+        game.spawnPlayerOnGridEvent.Event += spawnPlayerOnGridEvent;
 
-        var player1 = new Player();
-        game.AddPlayer(player1, 5, 5);
-        //player1.MovePlayer(3, 0);
-        player1.RotatePlayer(1);
+        //var player1 = new Player();
+        //game.SpawnPlayerOnGrid(player1, 5, 5);
+        ////player1.MovePlayer(3, 0);
+        //player1.RotatePlayer(1);
     }
 
-    private void CreatePlayerEvent_Event(object sender, CreatePlayerArgs e)
+    private void spawnPlayerOnGridEvent(object sender, spawnPlayerOnGridArgs e)
     {
         var pl = Instantiate(playerPrefab);
         pl.player = e.player;
