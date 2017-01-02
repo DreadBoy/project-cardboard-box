@@ -37,9 +37,22 @@ public class spawnPlayerOnGridArgs : EventArgs
 public class CommandArgs : EventArgs
 {
     public Command command;
+    public Player player;
 
-    public CommandArgs(Command command)
+    public CommandArgs(Command command, Player player)
     {
         this.command = command;
+        this.player = player;
     }
 }
+
+public class changeStateArgs : EventArgs
+{
+    public Game.State state;
+
+    public changeStateArgs(Game.State state)
+    {
+        this.state = state;
+    }
+}
+

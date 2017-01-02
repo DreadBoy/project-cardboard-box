@@ -8,7 +8,6 @@ namespace Cardboard
     public class Player
     {
         public Game game;
-        NetworkConnection connection;
 
         float speed = 0.5f;
         float rotationspeed = 0.5f;
@@ -42,6 +41,7 @@ namespace Cardboard
             private set { }
         }
 
+        //multiple of 90
         int angle;
         public Quaternion rotation
         {
@@ -68,8 +68,21 @@ namespace Cardboard
         {
         }
 
-        public bool MovePlayer(int x, int y)
+        public bool MovePlayer(int number)
         {
+            int x = 0, y = 0;
+
+            var looking = (angle / 90) % 90;
+            //looking up
+            if (looking == 0)
+                y = number;
+            if (looking == 1)
+                x = number;
+            if (looking == 2)
+                y = -number;
+            if (looking == 3)
+                x = -number;
+
             var newx = this.x + x;
             var newy = this.y + y;
 
@@ -105,6 +118,18 @@ namespace Cardboard
             if (Math.Abs(offsetangle) > 0)
                 offsetangle -= (offsetangle / Math.Abs(offsetangle)) * deltaTime * rotationspeed;
         }
-    }
 
+        public void ReceiveCommand(Command command)
+        {
+            if (command.type == Command.Type.MOVE)
+            {
+                MovePlayer(command.number1 + command.number2);
+            }
+            if (command.type == Command.Type.TURN)
+            {
+                RotatePlayer(command.number1 + command.number2);
+            }
+        }
+
+    }
 }

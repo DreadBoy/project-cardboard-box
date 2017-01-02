@@ -8,9 +8,6 @@ using UnityEngine.UI;
 public class ServerTest : NetworkManager
 {
     NetworkDiscovery discovery;
-    
-    float timer = 0;
-    float count = 0;
 
     List<SmartConnection> conns = new List<SmartConnection>();
 

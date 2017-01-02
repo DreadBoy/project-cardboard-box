@@ -12,9 +12,14 @@ public class GameBehaviour : MonoBehaviour {
     void Awake()
     {
         game = new Game(gridSize);
-        FindObjectOfType<ServerTest>().StartServer();
+        //FindObjectOfType<ServerTest>().StartServer();
 
         game.spawnPlayerOnGridEvent.Event += spawnPlayerOnGridEvent;
+
+        var conn1 = new MockConnection();
+        var player1 = game.PlayerConnect(conn1);
+        conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.READY), player1));
+
 
         //var player1 = new Player();
         //game.SpawnPlayerOnGrid(player1, 5, 5);

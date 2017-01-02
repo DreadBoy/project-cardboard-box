@@ -13,6 +13,13 @@ namespace Cardboard
         List<Player> players = new List<Player>();
         List<INetworkConnection> connections = new List<INetworkConnection>();
 
+        public enum State
+        {
+            lobby,
+            game
+        }
+        public State state { get; private set; }
+
         //Player[,] grid;
         public int gridsize
         {
@@ -21,13 +28,16 @@ namespace Cardboard
 
         public SmartEvent<GridCompiledArgs> gridCompiledEvent = new SmartEvent<GridCompiledArgs>();
         public SmartEvent<spawnPlayerOnGridArgs> spawnPlayerOnGridEvent = new SmartEvent<spawnPlayerOnGridArgs>();
+        public SmartEvent<changeStateArgs> changeStateEvent = new SmartEvent<changeStateArgs>();
 
         public Game(int gridsize)
         {
             //grid = new Player[gridsize, gridsize];
             this.gridsize = gridsize;
-
             gridCompiledEvent.RaiseEvent(new GridCompiledArgs(gridsize));
+
+            state = State.lobby;
+            changeStateEvent.RaiseEvent(new changeStateArgs(state));
         }
 
         public bool SpawnPlayerOnGrid(Player player)
@@ -78,16 +88,26 @@ namespace Cardboard
             return true;
         }
 
-        public void PlayerConnect(INetworkConnection connection)
+        public Player PlayerConnect(INetworkConnection connection)
         {
             //Abort, abort!
             if (players.Count != connections.Count)
-                return;
+                return null;
 
             var player = new Player();
             players.Add(player);
             connections.Add(connection);
             player.game = this;
+            connection.player = player;
+
+            connection.CommandReceived.Event += CommandReceived_Event;
+
+            return player;
+        }
+
+        private void CommandReceived_Event(object sender, CommandArgs e)
+        {
+            e.player.ReceiveCommand(e.command);
         }
 
         public void PlayerDisconnect(INetworkConnection connection)
