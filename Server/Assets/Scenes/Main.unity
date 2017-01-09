@@ -189,6 +189,46 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 400000, guid: bd3a7a773fe02354da0a4d8dbabd8cbb, type: 3}
   m_PrefabInternal: {fileID: 152364425}
+--- !u!1 &335381613
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 335381615}
+  - component: {fileID: 335381614}
+  m_Layer: 0
+  m_Name: Testing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &335381614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 335381613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d944de4eac559ac40a23ecadc41bf386, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &335381615
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 335381613}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &368139848
 GameObject:
   m_ObjectHideFlags: 0
@@ -451,7 +491,7 @@ GameObject:
   - component: {fileID: 754392977}
   - component: {fileID: 754392976}
   m_Layer: 0
-  m_Name: Server
+  m_Name: Network
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -870,6 +910,59 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1404447794}
+--- !u!1 &1448896887
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1448896889}
+  - component: {fileID: 1448896888}
+  m_Layer: 0
+  m_Name: Lobby
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1448896888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1448896887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a939ee3ab61ac14aab1a158962607d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: {x: 3.8, y: 0, z: 0}
+  playerPositions:
+  - {x: -9, y: 0, z: -0.6}
+  - {x: -4.7, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 4.7, y: 0, z: 0}
+  - {x: 9, y: 0, z: -0.6}
+  playerRotations:
+  - {x: 0, y: 0.9135455, z: 0, w: 0.4067366}
+  - {x: 0, y: 0.9961947, z: 0, w: 0.087155804}
+  - {x: 0, y: 1, z: 0, w: -0.00000004371139}
+  - {x: 0, y: 0.9961947, z: 0, w: -0.08715577}
+  - {x: 0, y: 0.9135455, z: 0, w: -0.40673658}
+--- !u!4 &1448896889
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1448896887}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.53, y: 0, z: 8.85}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1520425866
 GameObject:
   m_ObjectHideFlags: 0
@@ -1557,6 +1650,7 @@ MonoBehaviour:
   gridSize: 10
   playerPrefab: {fileID: 114797616299847488, guid: 8ccb2a6ef5d5f2448acc24eda224f19e,
     type: 2}
+  state: 0
 --- !u!4 &2051796885
 Transform:
   m_ObjectHideFlags: 0
@@ -1694,7 +1788,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2087524016}
   m_LocalRotation: {x: 0.07323822, y: 0, z: 0, w: 0.9973145}
-  m_LocalPosition: {x: -0.77, y: 4, z: 3.3}
+  m_LocalPosition: {x: -0.77, y: 4.5, z: -2.94}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1712,7 +1806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   positions:
-  - {x: -0.77, y: 4, z: 3.3}
+  - {x: -0.77, y: 4.5, z: -2.94}
   - {x: -0.77, y: 32.4, z: -18.9}
   rotations:
   - {x: 8.4, y: 0, z: 0}

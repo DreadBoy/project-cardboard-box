@@ -5,11 +5,19 @@ using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
 using UnityEngine.UI;
 
-public class ServerTest : NetworkManager
+public class NetworkBehaviour : NetworkManager
 {
     NetworkDiscovery discovery;
 
     List<SmartConnection> conns = new List<SmartConnection>();
+
+    //DI GameBehaviour
+    GameBehaviour game;
+
+    void Start()
+    {
+        game = FindObjectOfType<GameBehaviour>();
+    }
 
     public override void OnStartServer()
     {
@@ -18,7 +26,7 @@ public class ServerTest : NetworkManager
         discovery.showGUI = false;
         discovery.Initialize();
         discovery.StartAsServer();
-        Debug.Log("server broadcasting");
+        Debug.Log("Server broadcasting");
     }
 
     public override void OnServerConnect(NetworkConnection conn)
@@ -26,7 +34,7 @@ public class ServerTest : NetworkManager
         //new client connected
         base.OnServerConnect(conn);
         var sconn = new SmartConnection(conn);
-        FindObjectOfType<GameBehaviour>().game.PlayerConnect(sconn);
+        game.PlayerConnect(sconn);
         conns.Add(sconn);
         conn.Send(48, new StringMessage("Hello client!"));
         Debug.Log("Client connected");
@@ -36,7 +44,8 @@ public class ServerTest : NetworkManager
     {
         base.OnServerDisconnect(conn);
         var sconn = conns.Find(sc => sc.conn == conn);
-        FindObjectOfType<GameBehaviour>().game.PlayerDisconnect(sconn);
+        game.PlayerDisconnect(sconn);
         Debug.Log("Client disconnected");
     }
+
 }

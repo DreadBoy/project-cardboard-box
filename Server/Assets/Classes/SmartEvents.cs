@@ -14,32 +14,20 @@ public class GridCompiledArgs : EventArgs
 
 public class SpawnPlayerOnGridArgs : EventArgs
 {
-    public Vector3 position;
+    public PlayerBehaviour player;
 
-    public SpawnPlayerOnGridArgs(Vector3 position)
-    {
-        this.position = position;
-    }
-}
-
-public class spawnPlayerOnGridArgs : EventArgs
-{
-    public Player player;
-
-    public spawnPlayerOnGridArgs(Player player)
+    public SpawnPlayerOnGridArgs(PlayerBehaviour player)
     {
         this.player = player;
     }
 }
 
-//TODO very similar name, fix that!
-
 public class CommandArgs : EventArgs
 {
     public Command command;
-    public Player player;
+    public PlayerBehaviour player;
 
-    public CommandArgs(Command command, Player player)
+    public CommandArgs(Command command, PlayerBehaviour player)
     {
         this.command = command;
         this.player = player;
@@ -48,9 +36,9 @@ public class CommandArgs : EventArgs
 
 public class changeStateArgs : EventArgs
 {
-    public Game.State state;
+    public GameBehaviour.State state;
 
-    public changeStateArgs(Game.State state)
+    public changeStateArgs(GameBehaviour.State state)
     {
         this.state = state;
     }

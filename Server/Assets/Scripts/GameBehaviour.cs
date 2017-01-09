@@ -4,40 +4,100 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameBehaviour : MonoBehaviour {
-
-    public Game game;
+    
     public int gridSize;
     public PlayerBehaviour playerPrefab;
 
+    //DI LobbyBehaviour
+    LobbyBehaviour lobby;
+    GridBehaviour grid;
+
+
+    public enum State
+    {
+        lobby,
+        game,
+        ending
+    }
+    public State state = State.lobby;
+
+    List<PlayerBehaviour> players = new List<PlayerBehaviour>();
+    List<INetworkConnection> connections = new List<INetworkConnection>();
+
+    public SmartEvent<changeStateArgs> changeStateEvent = new SmartEvent<changeStateArgs>();
+    public SmartEvent<GridCompiledArgs> gridCompiledEvent = new SmartEvent<GridCompiledArgs>();
+
     void Awake()
     {
-        game = new Game(gridSize);
-        //FindObjectOfType<ServerTest>().StartServer();
-
-        game.spawnPlayerOnGridEvent.Event += spawnPlayerOnGridEvent;
-
-        var conn1 = new MockConnection();
-        var player1 = game.PlayerConnect(conn1);
-        conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.READY), player1));
-
-
-        //var player1 = new Player();
-        //game.SpawnPlayerOnGrid(player1, 5, 5);
-        ////player1.MovePlayer(3, 0);
-        //player1.RotatePlayer(1);
+        lobby = FindObjectOfType<LobbyBehaviour>();
+        grid = FindObjectOfType<GridBehaviour>();
     }
 
-    private void spawnPlayerOnGridEvent(object sender, spawnPlayerOnGridArgs e)
+    public bool PlayerConnect(INetworkConnection connection)
     {
-        var pl = Instantiate(playerPrefab);
-        pl.player = e.player;
+        //Abort, abort!
+        if (players.Count != connections.Count)
+            return false;
+
+        if (state != State.lobby)
+            return false;
+
+        //Create players and add them to lobby
+        var player = Instantiate(playerPrefab) as PlayerBehaviour;
+        lobby.AddPlayerToLobby(player);
+        players.Add(player);
+        connections.Add(connection);
+        connection.player = player;
+
+        //subscribe to player's connection
+        connection.CommandReceived.Event += CommandReceived_Event;
+
+        return player;
     }
 
-    void Start () {
-		
-	}
-	
-	void Update () {
-        game.Update(Time.deltaTime);
-	}
+    private void CommandReceived_Event(object sender, CommandArgs e)
+    {
+        e.player.ReceiveCommand(e.command);
+    }
+
+    public void PlayerDisconnect(INetworkConnection connection)
+    {
+        //Abort, abort!
+        if (players.Count != connections.Count)
+            return;
+
+        var index = connections.IndexOf(connection);
+
+        players.RemoveAt(index);
+        connections.RemoveAt(index);
+
+    }
+
+    float readyTimer = 0;
+
+    void Update()
+    {
+        if (state == State.lobby && players.Find(pl => pl.state != PlayerBehaviour.State.ready) == null)
+        {
+            if (readyTimer < 3)
+                readyTimer += Time.deltaTime;
+            if (readyTimer >= 3)
+            {
+                ChangeToState_Game();
+            }
+        }
+    }
+
+    public void ChangeToState_Game()
+    {
+        readyTimer = 0;
+        players.ForEach(delegate (PlayerBehaviour player)
+        {
+            player.state = PlayerBehaviour.State.ingame;
+            lobby.RemovePlayerFromLobby(player);
+            grid.AddPlayerToGrid(player);
+        });
+        state = State.game;
+        changeStateEvent.RaiseEvent(new changeStateArgs(State.game));
+    }
 }

@@ -5,23 +5,31 @@ using UnityEngine;
 public class CameraBehaviour : MonoBehaviour
 {
 
-    public List<Vector3> positions = new List<Vector3>();
-    public List<Vector3> rotations = new List<Vector3>();
+    public List<Vector3> positions = new List<Vector3>()
+    {
+        new Vector3(-0.77f, 4.5f, -2.94f),
+        new Vector3(-0.77f,32.4f, -18.9f)
+    };
+    public List<Vector3> rotations = new List<Vector3>()
+    {
+        new Vector3(8.4f, 0, 0),
+        new Vector3(70, 0, 0)
+    };
 
     LerpHelper<Vector3> lerpPosition = null;
     LerpHelper<Quaternion> lerpRotation = null;
 
     void Start()
     {
-        FindObjectOfType<GameBehaviour>().game.changeStateEvent.Event += ChangeStateEvent;
+        FindObjectOfType<GameBehaviour>().changeStateEvent.Event += ChangeStateEvent;
     }
 
     private void ChangeStateEvent(object sender, changeStateArgs e)
     {
         var index = -1;
-        if (e.state == Cardboard.Game.State.lobby)
+        if (e.state == GameBehaviour.State.lobby)
             index = 0;
-        if (e.state == Cardboard.Game.State.game)
+        if (e.state == GameBehaviour.State.game)
             index = 1;
 
         if (index > -1)
