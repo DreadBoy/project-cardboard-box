@@ -13,55 +13,11 @@ public class PlayerBehaviour : MonoBehaviour
     float rotationspeed = 0.5f;
 
     int x, y;
-    public Vector3 position
-    {
-        get
-        {
-            return new Vector3(x, 0, y);
-        }
-        set
-        {
-            x = (int)value.x;
-            y = (int)value.z;
-        }
-    }
     public bool IsOnSpot(int x, int y)
     {
         return this.x == x && this.y == y;
     }
-
-    float offsetx, offsety;
-    public Vector3 offset
-    {
-        get
-        {
-            return new Vector3(offsetx, 0, offsety);
-        }
-        private set { }
-    }
-
-    //multiple of 90
-    int angle;
-    public Quaternion rotation
-    {
-        get
-        {
-            return Quaternion.Euler(0, angle, 0);
-        }
-        private set { }
-    }
-
-    float offsetangle;
-    public Quaternion offsetrotation
-    {
-        get
-        {
-            return Quaternion.Euler(0, offsetangle * 90, 0);
-        }
-        private set { }
-    }
-
-    int offsetSign;
+    int angle = 0;
 
     public enum State
     {
@@ -73,6 +29,8 @@ public class PlayerBehaviour : MonoBehaviour
 
     bool runningCommand = false;
     Queue<Command> commandQueue = new Queue<Command>();
+    LerpHelper<Vector3> lerpPosition = null;
+    LerpHelper<Quaternion> lerpRotation = null;
 
     void Awake()
     {
@@ -84,35 +42,34 @@ public class PlayerBehaviour : MonoBehaviour
     {
     }
 
-    void UpdateOffset(float deltaTime)
-    {
-        if (offsetx * offsetSign < 0)
-            offsetx += offsetSign * deltaTime * speed;
-
-        if (offsety * offsetSign < 0)
-        {
-            offsety += offsetSign * deltaTime * speed;
-            Debug.Log(offsety);
-        }
-
-        if (offsetangle * offsetSign > 0)
-            offsetangle += offsetSign * deltaTime * rotationspeed;
-
-        if (offsetx * offsetSign <= 0 && offsety * offsetSign <= 0 && offsetangle * offsetSign <= 0 && runningCommand == true)
-            runningCommand = false;
-
-        if (!runningCommand && commandQueue.Count > 0)
-            ReceiveCommand(commandQueue.Dequeue());
-    }
-
     void Update()
     {
         if (state == State.ingame)
         {
-            UpdateOffset(Time.deltaTime);
+            if (!runningCommand && commandQueue.Count > 0)
+                ReceiveCommand(commandQueue.Dequeue());
 
-            transform.position = grid.FromPlayerPosition(position, offset);
-            transform.rotation = rotation * offsetrotation;
+            if (lerpPosition != null)
+            {
+                lerpPosition.Update(Time.deltaTime);
+                transform.localPosition = lerpPosition.Lerp();
+                if (lerpPosition.IsDone())
+                {
+                    lerpPosition = null;
+                    runningCommand = false;
+                }
+            }
+
+            if (lerpRotation != null)
+            {
+                lerpRotation.Update(Time.deltaTime);
+                transform.localRotation = lerpRotation.Lerp();
+                if (lerpRotation.IsDone())
+                {
+                    lerpRotation = null;
+                    runningCommand = false;
+                }
+            }
         }
     }
 
@@ -139,46 +96,51 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+    public void SpawnPlayer(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+        transform.localPosition = grid.FromPlayerPosition(x, y);
+        transform.localRotation = Quaternion.Euler(0, 90 * angle, 0);
+    }
+
     public bool MovePlayer(int number)
     {
-        int x = 0, y = 0;
+        int newx = x, newy = y;
 
         var looking = (angle / 90) % 90;
         //looking up
         if (looking == 0)
         {
-            y = number;
-            offsetSign = 1;
+            newy = y + number;
+            newx = x;
         }
         if (looking == 1)
         {
-            x = number;
-            offsetSign = 1;
+            newx = x + number;
+            newy = y;
         }
         if (looking == 2)
         {
-            y = number;
-            offsetSign = -1;
+            newy = y - number;
+            newx = x;
         }
         if (looking == 3)
         {
-            x = number;
-            offsetSign = -1;
+            newx = x - number;
+            newy = y;
         }
 
-        var newx = this.x + x * offsetSign;
-        var newy = this.y + y * offsetSign;
 
         if (newx < 0 || newx >= game.gridSize)
             return false;
         if (newy < 0 || newy >= game.gridSize)
             return false;
 
-        this.x = newx;
-        this.y = newy;
+        x = newx;
+        y = newy;
 
-        offsetx = -x * offsetSign;
-        offsety = -y * offsetSign;
+        lerpPosition = new LerpHelper<Vector3>(transform.localPosition, grid.FromPlayerPosition(newx, newy), Vector3.Lerp);
 
         runningCommand = true;
 
@@ -188,10 +150,7 @@ public class PlayerBehaviour : MonoBehaviour
     public void RotatePlayer(int quarter)
     {
         angle += quarter * 90;
-
-        offsetangle = -quarter;
-
-        offsetSign = 1;
+        lerpRotation = new LerpHelper<Quaternion>(transform.localRotation, transform.localRotation * Quaternion.Euler(0, 90 * quarter, 0), Quaternion.Lerp);
 
         runningCommand = true;
     }

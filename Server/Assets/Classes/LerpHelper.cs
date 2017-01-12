@@ -14,7 +14,7 @@ class LerpHelper<T>
         this.lerpFunction = lerpFunction;
     }
     public LerpHelper(T from, T to, Func<T, T, float, T> lerpFunction, float speed)
-        :this(from, to, lerpFunction)
+        : this(from, to, lerpFunction)
     {
         this.speed = speed;
     }
@@ -26,10 +26,13 @@ class LerpHelper<T>
 
     public T Lerp()
     {
+        if (fraction >= 1)
+            return to;
+
         return lerpFunction(from, to, fraction);
     }
 
-    public bool Done()
+    public bool IsDone()
     {
         return fraction >= 1;
     }

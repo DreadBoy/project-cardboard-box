@@ -13,8 +13,8 @@ class Testing : MonoBehaviour
         game.PlayerConnect(conn1);
         game.PlayerConnect(conn2);
 
-        //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.READY), conn1.player));
-        //conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.READY), conn2.player));
+        conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.READY), conn1.player));
+        conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.READY), conn2.player));
 
 
     }
@@ -30,9 +30,9 @@ class Testing : MonoBehaviour
         {
             triggered2 = true;
 
-            game.ChangeToState_Game();
+            //game.ChangeToState_Game();
         }
-        if (time > 2 && !triggered1)
+        if (time > 4 && !triggered1)
         {
             triggered1 = true;
             conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.MOVE, 2), conn1.player));

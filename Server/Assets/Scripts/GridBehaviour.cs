@@ -9,7 +9,7 @@ public class GridBehaviour : MonoBehaviour
 
     public GameObject cell;
     public Vector3 offset = new Vector3(2.95f, 0, 2.95f);
-    Vector3 start;
+    Vector3 origin;
 
     List<PlayerBehaviour> players = new List<PlayerBehaviour>();
 
@@ -22,14 +22,16 @@ public class GridBehaviour : MonoBehaviour
         game = FindObjectOfType<GameBehaviour>();
         game.changeStateEvent.Event += ChangeStateEvent;
         random = new System.Random();
+
+        CreateGrid();
     }
 
     private void ChangeStateEvent(object sender, changeStateArgs e)
     {
         if (e.state == GameBehaviour.State.game)
-            DisplayGrid();
+            ShowGrid();
         else if (e.state == GameBehaviour.State.game)
-            DestroyGrid();
+            HideGrid();
 
     }
 
@@ -37,12 +39,12 @@ public class GridBehaviour : MonoBehaviour
     {
     }
 
-    public void DisplayGrid()
+    public void CreateGrid()
     {
         if (!cell)
             return;
-        
-        start = transform.position - (game.gridSize / 2 * offset);
+
+        var start = transform.position - (game.gridSize / 2 * offset);
         var current = Vector3.zero;
         for (int y = 0; y < game.gridSize; y++)
         {
@@ -54,13 +56,23 @@ public class GridBehaviour : MonoBehaviour
                 var c = Instantiate(cell, transform);
                 c.transform.position = start + current;
             }
+
         }
+        origin = -(game.gridSize / 2 * offset);
     }
 
-    public void DestroyGrid()
+    public void ShowGrid()
     {
         foreach (Transform child in transform)
-            Destroy(child);
+            if (child.GetComponent<PlayerBehaviour>() == null)
+                child.gameObject.SetActive(true);
+    }
+
+    public void HideGrid()
+    {
+        foreach (Transform child in transform)
+            if (child.GetComponent<PlayerBehaviour>() == null)
+                child.gameObject.SetActive(false);
     }
 
     public void AddPlayerToGrid(PlayerBehaviour player)
@@ -75,16 +87,10 @@ public class GridBehaviour : MonoBehaviour
         players.Remove(player);
     }
 
-    public Vector3 FromPlayerPosition(Vector3 playerPosition, Vector3 playerOffset)
+    public Vector3 FromPlayerPosition(int x, int y)
     {
-        var position = Vector3.zero;
-
-        position.x = playerPosition.x * offset.x + playerOffset.x * offset.x;
-        position.z = playerPosition.z * offset.z + playerOffset.z * offset.z;
-
-        position += start;
-
-        return position;
+        var ret = origin + new Vector3((float)x * offset.x, 0, (float)y * offset.z);
+        return ret;
     }
 
     public bool SpawnPlayerOnGrid(PlayerBehaviour player)
@@ -130,7 +136,7 @@ public class GridBehaviour : MonoBehaviour
             //if (grid[x, y] != null)
             return false;
 
-        player.position = new UnityEngine.Vector3(x, 0, y);
+        player.SpawnPlayer(x, y);
         return true;
     }
 }

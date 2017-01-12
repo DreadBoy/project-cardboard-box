@@ -58,14 +58,14 @@ public class CameraBehaviour : MonoBehaviour
         {
             lerpPosition.Update(Time.deltaTime);
             transform.position = lerpPosition.Lerp();
-            if (lerpPosition.Done())
+            if (lerpPosition.IsDone())
                 lerpPosition = null;
         }
         if (lerpRotation != null)
         {
             lerpRotation.Update(Time.deltaTime);
             transform.rotation = lerpRotation.Lerp();
-            if (lerpRotation.Done())
+            if (lerpRotation.IsDone())
                 lerpRotation = null;
         }
     }
