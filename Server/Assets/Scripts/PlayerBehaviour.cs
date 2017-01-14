@@ -1,6 +1,4 @@
-﻿using Cardboard;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour
@@ -96,12 +94,18 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+
     public void SpawnPlayer(int x, int y)
     {
         this.x = x;
         this.y = y;
         transform.localPosition = grid.FromPlayerPosition(x, y);
         transform.localRotation = Quaternion.Euler(0, 90 * angle, 0);
+    }
+
+    public void DestroyPlayer()
+    {
+        Destroy(gameObject);
     }
 
     public bool MovePlayer(int number)

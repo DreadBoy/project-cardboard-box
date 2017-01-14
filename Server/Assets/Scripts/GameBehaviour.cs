@@ -68,8 +68,12 @@ public class GameBehaviour : MonoBehaviour {
 
         var index = connections.IndexOf(connection);
 
+        var player = players[index];
+        lobby.RemovePlayerFromLobby(player);
         players.RemoveAt(index);
         connections.RemoveAt(index);
+
+        player.DestroyPlayer();
 
     }
 
@@ -77,7 +81,7 @@ public class GameBehaviour : MonoBehaviour {
 
     void Update()
     {
-        if (state == State.lobby && players.Find(pl => pl.state != PlayerBehaviour.State.ready) == null)
+        if (state == State.lobby && players.Count > 0 && players.Find(pl => pl.state != PlayerBehaviour.State.ready) == null)
         {
             if (readyTimer < 3)
                 readyTimer += Time.deltaTime;

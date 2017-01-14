@@ -1,9 +1,7 @@
-﻿using Cardboard;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
-using UnityEngine.UI;
 
 public class NetworkBehaviour : NetworkManager
 {
@@ -17,6 +15,7 @@ public class NetworkBehaviour : NetworkManager
     void Start()
     {
         game = FindObjectOfType<GameBehaviour>();
+        StartServer();
     }
 
     public override void OnStartServer()
@@ -44,6 +43,7 @@ public class NetworkBehaviour : NetworkManager
     {
         base.OnServerDisconnect(conn);
         var sconn = conns.Find(sc => sc.conn == conn);
+        conns.Remove(sconn);
         game.PlayerDisconnect(sconn);
         Debug.Log("Client disconnected");
     }
