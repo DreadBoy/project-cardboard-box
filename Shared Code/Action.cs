@@ -7,8 +7,9 @@ namespace ProjectCardboardBox
 {
     public enum Action
     {
-        READY,
-        MOVE,
-        TURN
+        REQUESTCHIPS = -2,
+        READY = -1,
+        MOVE = 0,
+        TURN = 1
     }
 }

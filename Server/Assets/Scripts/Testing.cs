@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ProjectCardboardBox;
+using UnityEngine;
 
 class Testing : MonoBehaviour
 {
@@ -13,8 +14,8 @@ class Testing : MonoBehaviour
         game.PlayerConnect(conn1);
         game.PlayerConnect(conn2);
 
-        conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.READY), conn1.player));
-        conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.READY), conn2.player));
+        conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.player));
+        conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn2.player));
 
 
     }
@@ -35,9 +36,9 @@ class Testing : MonoBehaviour
         if (time > 4 && !triggered1)
         {
             triggered1 = true;
-            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.MOVE, 2), conn1.player));
-            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.TURN, 2), conn1.player));
-            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Command.Type.MOVE, 2), conn1.player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 2), conn1.player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn1.player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 2), conn1.player));
         }
     }
 }

@@ -1,11 +1,13 @@
-﻿using System;
+﻿using ProjectCardboardBox;
+using System;
 using UnityEngine;
 
 public class GameBehaviour : MonoBehaviour {
 
 
-    public NetworkBehaviour network;
+    public NetworkBehaviour networkBehaviour;
     public UIBehaviour uiBehaviour;
+    public LobbyUIBehaviour lobbyUiBehaviour;
 
     string address;
 
@@ -17,8 +19,9 @@ public class GameBehaviour : MonoBehaviour {
     public State state = State.lobby;
 
     void Start () {
-        network = FindObjectOfType<NetworkBehaviour>();
+        networkBehaviour = FindObjectOfType<NetworkBehaviour>();
         uiBehaviour = FindObjectOfType<UIBehaviour>();
+        lobbyUiBehaviour = FindObjectOfType<LobbyUIBehaviour>();
     }
 	
 	void Update () {
@@ -27,7 +30,7 @@ public class GameBehaviour : MonoBehaviour {
 
     public void GameFound(string address)
     {
-        uiBehaviour.GameFound();
+        lobbyUiBehaviour.Found();
         this.address = address;
     }
 
@@ -39,10 +42,14 @@ public class GameBehaviour : MonoBehaviour {
 
     public void JoinGame()
     {
-        if (network.JoinGame(address))
-        {
-            state = State.game;
-            uiBehaviour.ChangeState(state);
-        }
+        if (networkBehaviour.JoinGame(address))
+            lobbyUiBehaviour.Waiting();
+    }
+
+    public void ReadyToPlay()
+    {
+        networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.READY));
+        state = State.game;
+        uiBehaviour.ChangeState(state);
     }
 }

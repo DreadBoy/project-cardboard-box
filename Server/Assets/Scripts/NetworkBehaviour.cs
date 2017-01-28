@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ProjectCardboardBox;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
@@ -35,12 +36,13 @@ public class NetworkBehaviour : NetworkManager
         var sconn = new SmartConnection(conn);
         game.PlayerConnect(sconn);
         conns.Add(sconn);
-        conn.Send(48, new StringMessage("Hello client!"));
+        conn.Send(MessageType.Handshake, new StringMessage("Hello client!"));
         Debug.Log("Client connected");
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
+        //client disconnected
         base.OnServerDisconnect(conn);
         var sconn = conns.Find(sc => sc.conn == conn);
         conns.Remove(sconn);

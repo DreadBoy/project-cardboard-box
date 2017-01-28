@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using ProjectCardboardBox;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIBehaviour : MonoBehaviour
 {
 
-    public Button joinButton;
-    public Text status;
-
     public LobbyUIBehaviour lobbyState;
     public GameUIBehaviour gameState;
+    public NetworkBehaviour networkBehaviour;
 
     void Start()
     {
@@ -17,10 +17,16 @@ public class UIBehaviour : MonoBehaviour
             lobbyState = FindObjectOfType<LobbyUIBehaviour>();
         if (gameState == null)
             gameState = FindObjectOfType<GameUIBehaviour>();
+        if (networkBehaviour == null)
+            networkBehaviour = FindObjectOfType<NetworkBehaviour>();
     }
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
 
     }
 
@@ -30,20 +36,14 @@ public class UIBehaviour : MonoBehaviour
         {
             lobbyState.gameObject.SetActive(false);
             gameState.gameObject.SetActive(true);
+            networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.REQUESTCHIPS, 8));
         }
         if (state == GameBehaviour.State.lobby)
         {
             lobbyState.gameObject.SetActive(true);
             gameState.gameObject.SetActive(false);
-            joinButton.gameObject.SetActive(false);
-            status.text = "Match found!";
+            lobbyState.Searching();
+            gameState.ClearAll();
         }
     }
-
-    public void GameFound()
-    {
-        joinButton.gameObject.SetActive(true);
-        status.text = "Match found!";
-    }
-    
 }

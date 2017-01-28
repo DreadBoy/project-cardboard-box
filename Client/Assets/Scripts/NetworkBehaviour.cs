@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
 using ProjectCardboardBox;
+using System.Linq;
 
 public class NetworkBehaviour : NetworkManager
 {
@@ -12,6 +13,7 @@ public class NetworkBehaviour : NetworkManager
     public int key;
 
     GameBehaviour game;
+    public GameUIBehaviour gameUiBehaviour;
 
     void Start()
     {
@@ -23,6 +25,8 @@ public class NetworkBehaviour : NetworkManager
         discovery.OnDiscovered += OnDiscovered;
 
         game = FindObjectOfType<GameBehaviour>();
+        if (gameUiBehaviour == null)
+            gameUiBehaviour = FindObjectOfType<GameUIBehaviour>();
     }
 
 
@@ -51,13 +55,23 @@ public class NetworkBehaviour : NetworkManager
     {
         base.OnClientConnect(conn);
         this.connection = conn;
-        conn.RegisterHandler(48, OnHandReceived);
+        conn.RegisterHandler(MessageType.Hand, OnHandReceived);
+        conn.RegisterHandler(MessageType.Handshake, OnHandshakeReceived);
     }
 
     public void OnHandReceived(NetworkMessage netMsg)
     {
-        var message = netMsg.ReadMessage<StringMessage>();
-        Debug.Log(message.value);
+        var message = netMsg.ReadMessage<StringMessage>().value;
+        Debug.Log(message);
+        var chips = message.Split('|').Select(c => new Chip(c)).ToList();
+        gameUiBehaviour.OnHandReceived(chips);
+        Debug.Log(message);
+    }
+
+    public void OnHandshakeReceived(NetworkMessage netMsg)
+    {
+        var message = netMsg.ReadMessage<StringMessage>().value;
+        Debug.Log("Handshake :" + message);
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
@@ -65,5 +79,20 @@ public class NetworkBehaviour : NetworkManager
         base.OnClientDisconnect(conn);
         StopClient();
         game.GameLost();
+        discovery.Initialize();
+        discovery.StartAsClient();
+    }
+
+    public void SendCommands(Command[] commands)
+    {
+        var message = string.Join("|", commands.Select(c => c.ToString()).ToArray());
+        Debug.Log(message);
+        if (connection != null)
+            connection.Send(MessageType.Command, new StringMessage(message));
+    }
+
+    public void SendCommand(Command command)
+    {
+        connection.Send(MessageType.Command, new StringMessage(command.ToString()));
     }
 }

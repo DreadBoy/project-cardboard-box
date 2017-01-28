@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ProjectCardboardBox;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GridCompiledArgs : EventArgs
@@ -40,6 +42,18 @@ public class changeStateArgs : EventArgs
     public changeStateArgs(GameBehaviour.State state)
     {
         this.state = state;
+    }
+}
+
+public class ChipsArgs : EventArgs
+{
+    public List<Chip> chips;
+    public PlayerBehaviour player;
+
+    public ChipsArgs(List<Chip> chips, PlayerBehaviour player)
+    {
+        this.chips = chips;
+        this.player = player;
     }
 }
 
