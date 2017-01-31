@@ -6,14 +6,14 @@ using UnityEngine.Networking.NetworkSystem;
 
 public interface INetworkConnection
 {
-    NetworkConnection conn { get; set; }
     SmartEvent<CommandArgs> CommandReceived { get; set; }
     PlayerBehaviour player { get; set; }
+    void Send(short msgType, MessageBase message);
 }
 
 public class SmartConnection : INetworkConnection
 {
-    public NetworkConnection conn { get; set; }
+    private NetworkConnection conn { get; set; }
     public SmartEvent<CommandArgs> CommandReceived { get; set; }
     public PlayerBehaviour player { get; set; }
 
@@ -24,6 +24,15 @@ public class SmartConnection : INetworkConnection
         conn.RegisterHandler(MessageType.Command, OnCommandReceived);
     }
 
+    public void Send(short msgType, MessageBase message)
+    {
+        conn.Send(msgType, message);
+    }
+
+    public bool HasConnection(NetworkConnection conn)
+    {
+        return conn == this.conn;
+    }
 
     void OnCommandReceived(NetworkMessage netMsg)
     {
@@ -40,13 +49,16 @@ public class SmartConnection : INetworkConnection
 
 public class MockConnection : INetworkConnection
 {
-    public NetworkConnection conn { get; set; }
     public SmartEvent<CommandArgs> CommandReceived { get; set; }
     public PlayerBehaviour player { get; set; }
 
     public MockConnection()
     {
         CommandReceived = new SmartEvent<CommandArgs>();
-        conn = new NetworkConnection();
+    }
+
+    public void Send(short msgType, MessageBase message)
+    {
+        Debug.Log("(Mock connection) Sending network message " + msgType + ": " + message.ToString());
     }
 }

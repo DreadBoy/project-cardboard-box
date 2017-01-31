@@ -44,7 +44,7 @@ public class NetworkBehaviour : NetworkManager
     {
         //client disconnected
         base.OnServerDisconnect(conn);
-        var sconn = conns.Find(sc => sc.conn == conn);
+        var sconn = conns.Find(sc => sc.HasConnection(conn));
         conns.Remove(sconn);
         game.PlayerDisconnect(sconn);
         Debug.Log("Client disconnected");

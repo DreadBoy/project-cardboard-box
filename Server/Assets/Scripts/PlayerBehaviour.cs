@@ -10,8 +10,8 @@ public class PlayerBehaviour : MonoBehaviour
     public GameBehaviour game;
     public GridBehaviour grid;
 
-    float speed = 2f;
-    float rotationspeed = 0.5f;
+    float speed = 6f;
+    float rotationspeed = 1.5f;
 
     int x, y;
     public bool IsOnSpot(int x, int y)
@@ -97,7 +97,7 @@ public class PlayerBehaviour : MonoBehaviour
         {
             state = State.ready;
         }
-        else if(command.type == Action.REQUESTCHIPS)
+        else if (command.type == Action.REQUESTCHIPS)
         {
             //NOTE You can generate chips based on current situation
             chipsEvent.RaiseEvent(new ChipsArgs(GenerateChips(command.number), this));
@@ -110,30 +110,32 @@ public class PlayerBehaviour : MonoBehaviour
         int numNumber = 0, numAction = 0;
         for (int i = 0; i < number; i++)
         {
-            var type = Random.Range(0, 2);
-            if (type == 0)
+            var type = Random.Range(0, 3);
+            if (new int[] { 0 }.Contains(type))
             {
-                // 1/3 change to generate action
+                // some chance to generate action
                 var action = (Action)Random.Range(0, Enum.GetValues(typeof(Action)).Cast<int>().Max() + 1);
                 chips.Add(new Chip(Chip.Type.Action, action.ToString()));
-                numNumber++;
-            }
-            else if (type == 1 ||type == 2)
-            {
-                // 2/3 change to generate number
-                chips.Add(new Chip(Chip.Type.Number, Random.Range(0, 10).ToString()));
                 numAction++;
             }
+            else if (new int[] { 1, 2 }.Contains(type))
+            {
+                // some chance to generate number
+                chips.Add(new Chip(Chip.Type.Number, Random.Range(0, 10).ToString()));
+                numNumber++;
+            }
         }
-        if(numNumber == 0)
+        if (numNumber == 0)
         {
-            var first = chips.Where(c => c.type == Chip.Type.Action).First();
+            var act = chips.Where(c => c.type == Chip.Type.Action).ToList();
+            var first = act.First();
             var index = chips.IndexOf(first);
             chips[index] = new Chip(Chip.Type.Number, Random.Range(0, 10).ToString());
         }
-        if(numAction == 0)
+        if (numAction == 0)
         {
-            var first = chips.Where(c => c.type == Chip.Type.Number).First();
+            var nums = chips.Where(c => c.type == Chip.Type.Number).ToList();
+            var first = nums.First();
             var index = chips.IndexOf(first);
             chips[index] = new Chip(Chip.Type.Action, ((Action)Random.Range(0, Enum.GetValues(typeof(Action)).Cast<int>().Max() + 1)).ToString());
         }
@@ -194,7 +196,7 @@ public class PlayerBehaviour : MonoBehaviour
         x = newx;
         y = newy;
 
-        lerpPosition = new LerpHelper<Vector3>(transform.localPosition, grid.FromPlayerPosition(newx, newy), Vector3.Lerp, speed);
+        lerpPosition = new LerpHelper<Vector3>(transform.localPosition, grid.FromPlayerPosition(newx, newy), Vector3.Lerp, speed, Vector3.Distance(grid.FromPlayerPosition(newx, newy), transform.localPosition));
 
         runningCommand = true;
 
@@ -203,9 +205,15 @@ public class PlayerBehaviour : MonoBehaviour
 
     public void RotatePlayer(int quarter)
     {
+        quarter %= 4;
+
+        // don't turn at all
+        if (quarter == 0)
+            return;
+
         angle += quarter * 90;
         angle %= 360;
-        lerpRotation = new LerpHelper<Quaternion>(transform.localRotation, transform.localRotation * Quaternion.Euler(0, 90 * quarter, 0), Quaternion.Lerp, rotationspeed);
+        lerpRotation = new LerpHelper<Quaternion>(transform.localRotation, transform.localRotation * Quaternion.Euler(0, 90 * quarter, 0), Quaternion.Lerp, rotationspeed, quarter);
 
         runningCommand = true;
     }

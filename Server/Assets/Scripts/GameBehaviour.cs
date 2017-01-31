@@ -62,14 +62,13 @@ public class GameBehaviour : MonoBehaviour
     {
         var index = players.IndexOf(e.player);
         string str = string.Join("|", e.chips.Select(c => c.ToString()).ToArray());
-        connections[index].conn.Send(MessageType.Hand, new StringMessage(str));
+        connections[index].Send(MessageType.Hand, new StringMessage(str));
         Debug.Log("Sending chips: " + str);
     }
 
     private void CommandReceived_Event(object sender, CommandArgs e)
     {
         e.player.ReceiveCommand(e.command);
-        //TODO Generate new hand
     }
 
     public void PlayerDisconnect(INetworkConnection connection)
