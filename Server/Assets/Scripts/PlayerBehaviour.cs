@@ -1,16 +1,15 @@
 ﻿using ProjectCardboardBox;
-using Enum = System.Enum;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
+using Enum = System.Enum;
 
 public class PlayerBehaviour : MonoBehaviour
 {
-
     public GameBehaviour game;
     public GridBehaviour grid;
 
-    float speed = 6f;
+    float speed = 4f;
     float rotationspeed = 1.5f;
 
     int x, y;
@@ -35,10 +34,16 @@ public class PlayerBehaviour : MonoBehaviour
 
     public SmartEvent<ChipsArgs> chipsEvent = new SmartEvent<ChipsArgs>();
 
+    public Animator animator;
+
     void Awake()
     {
         grid = FindObjectOfType<GridBehaviour>();
         game = FindObjectOfType<GameBehaviour>();
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
     }
 
     void Start()
@@ -60,6 +65,7 @@ public class PlayerBehaviour : MonoBehaviour
                 {
                     lerpPosition = null;
                     runningCommand = false;
+                    animator.SetBool("Moving", false);
                 }
             }
 
@@ -71,6 +77,7 @@ public class PlayerBehaviour : MonoBehaviour
                 {
                     lerpRotation = null;
                     runningCommand = false;
+                    animator.SetBool("Moving", false);
                 }
             }
         }
@@ -197,6 +204,8 @@ public class PlayerBehaviour : MonoBehaviour
         y = newy;
 
         lerpPosition = new LerpHelper<Vector3>(transform.localPosition, grid.FromPlayerPosition(newx, newy), Vector3.Lerp, speed, Vector3.Distance(grid.FromPlayerPosition(newx, newy), transform.localPosition));
+        //TODO Some static value?
+        animator.SetBool("Moving", true);
 
         runningCommand = true;
 
@@ -214,6 +223,7 @@ public class PlayerBehaviour : MonoBehaviour
         angle += quarter * 90;
         angle %= 360;
         lerpRotation = new LerpHelper<Quaternion>(transform.localRotation, transform.localRotation * Quaternion.Euler(0, 90 * quarter, 0), Quaternion.Lerp, rotationspeed, quarter);
+        animator.SetBool("Moving", true);
 
         runningCommand = true;
     }

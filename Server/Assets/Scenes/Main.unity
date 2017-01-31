@@ -204,7 +204,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &335381614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1719,7 +1719,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridSize: 10
-  playerPrefab: {fileID: 114797616299847488, guid: 8ccb2a6ef5d5f2448acc24eda224f19e,
+  playerPrefab: {fileID: 114860827733322440, guid: 0713fee9c4f4fd54ea58f1ef3b94ba7f,
     type: 2}
   state: 0
 --- !u!4 &2051796885

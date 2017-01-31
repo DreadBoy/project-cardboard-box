@@ -12,10 +12,10 @@ class Testing : MonoBehaviour
         game = FindObjectOfType<GameBehaviour>();
 
         game.PlayerConnect(conn1);
-        game.PlayerConnect(conn2);
+        //game.PlayerConnect(conn2);
 
         conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.player));
-        conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn2.player));
+        //conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn2.player));
 
 
     }
@@ -33,12 +33,14 @@ class Testing : MonoBehaviour
 
             //game.ChangeToState_Game();
         }
-        if (time > 4 && !triggered1)
+        if (time > 1.5f && !triggered1)
         {
             triggered1 = true;
-            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 2), conn1.player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn1.player));
             conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn1.player));
-            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 2), conn1.player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn1.player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn1.player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn1.player));
         }
     }
 }
