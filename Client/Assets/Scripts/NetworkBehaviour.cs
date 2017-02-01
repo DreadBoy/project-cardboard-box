@@ -93,6 +93,7 @@ public class NetworkBehaviour : NetworkManager
 
     public void SendCommand(Command command)
     {
-        connection.Send(MessageType.Command, new StringMessage(command.ToString()));
+        if (connection != null)
+            connection.Send(MessageType.Command, new StringMessage(command.ToString()));
     }
 }

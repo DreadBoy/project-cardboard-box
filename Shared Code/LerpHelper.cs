@@ -11,7 +11,7 @@ namespace ProjectCardboardBox
     {
         public T from, to;
         public float progress = 0;
-        public float goal = 1;
+        public float distance = 1;
         public float speed = 1;
         Func<T, T, float, T> lerpFunction;
 
@@ -28,17 +28,17 @@ namespace ProjectCardboardBox
         /// <param name="to"></param>
         /// <param name="lerpFunction">Lerp function, eg. Vector3.Lerp, Quaternion.Lerp</param>
         /// <param name="speed"></param>
-        /// <param name="goal">When Helper should stop lerping, default 1. Usefull for maintaining constant speed</param>
-        public LerpHelper(T from, T to, Func<T, T, float, T> lerpFunction, float speed = 1, float goal = 1)
+        /// <param name="distance">Usefull for maintaining constant speed of moving object</param>
+        public LerpHelper(T from, T to, Func<T, T, float, T> lerpFunction, float speed = 1, float distance = 1)
             : this(from, to, lerpFunction)
         {
             this.speed = speed;
-            this.goal = goal;
+            this.distance = distance;
         }
 
         public void Update(float deltaTime)
         {
-            progress += deltaTime * speed / goal;
+            progress += deltaTime * speed / distance;
         }
 
         public T Lerp()

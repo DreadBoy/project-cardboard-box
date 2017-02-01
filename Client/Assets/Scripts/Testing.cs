@@ -25,12 +25,13 @@ public class Testing : MonoBehaviour
         uiBehaviour.ChangeState(game.state);
         gameUiBehaviour.OnHandReceived(new List<Chip>() {
             new Chip("Action:MOVE"),
+            new Chip("Number:5"),
+            new Chip("Action:TURN"),
             new Chip("Number:1"),
+            new Chip("Action:TURN"),
+            new Chip("Number:3"),
             new Chip("Action:MOVE"),
-            new Chip("Number:1"),
-            new Chip("Action:MOVE"),
-            new Chip("Number:1"),
-            new Chip("Action:MOVE")
+            new Chip("Number:9")
         });
 
     }
