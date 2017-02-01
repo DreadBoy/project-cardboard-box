@@ -9,19 +9,16 @@ public class GameUIBehaviour : MonoBehaviour
 {
     NetworkBehaviour networkBehaviour;
 
-    public GameObject source;
-    public GameObject destination;
-
     public ChipBehaviour chipPrefab;
 
     List<ChipBehaviour> sourceChips = new List<ChipBehaviour>();
     List<ChipBehaviour> destinationChips = new List<ChipBehaviour>();
 
-    Vector2 sourceStart = new Vector2(60, -25);
-    Vector2 destinationStart = new Vector2(60, -465);
+    Vector2 sourceStart = new Vector2(-450, 275);
+    Vector2 destinationStart = new Vector2(-450, -145);
 
-    Vector2 sourceSpace = new Vector2(280, -150);
-    Vector2 destinationSpace = new Vector2(280, -150);
+    Vector2 sourceSpace = new Vector2(300, -130);
+    Vector2 destinationSpace = new Vector2(300, -130);
 
     void Start()
     {
@@ -64,6 +61,25 @@ public class GameUIBehaviour : MonoBehaviour
         sourceChips.Clear();
     }
 
+    //Vector2 GetChipLocalPosition(ChipBehaviour chip)
+    //{
+    //    var index = -1;
+    //    index = sourceChips.IndexOf(chip);
+    //    if (index >= 0)
+    //    {
+    //        return new Vector2(
+    //            (index % 4) * sourceSpace.x,
+    //            (index - index % 4) / 4 * sourceSpace.y);
+    //    }
+    //    else
+    //        index = destinationChips.IndexOf(chip);
+    //    if(index >= 0)
+    //    {
+    //        return Vector2.zero;
+    //    }
+    //    return Vector2.zero;
+    //}
+
     public void UpdateChips()
     {
         for (int i = 0; i < sourceChips.Count; i++)
@@ -71,22 +87,23 @@ public class GameUIBehaviour : MonoBehaviour
             var chip = sourceChips[i];
             chip.transform.SetParent(transform);
             chip.rectTransform.localScale = Vector3.one;
-            chip.rectTransform.anchoredPosition = sourceStart +
+            chip.LerpTo(
+                sourceStart +
                 new Vector2(
-                (i % 4) * sourceSpace.x,
-                (i - i % 4) / 4 * sourceSpace.y);
+                    (i % 4) * sourceSpace.x,
+                    (i - i % 4) / 4 * sourceSpace.y));
         }
 
         for (int i = 0; i < destinationChips.Count; i++)
         {
             var chip = destinationChips[i];
             chip.transform.SetParent(transform);
-            chip.rectTransform.anchoredPosition = destinationStart;
             chip.rectTransform.localScale = Vector3.one;
-            chip.rectTransform.anchoredPosition = destinationStart +
+            chip.LerpTo(
+                destinationStart +
                 new Vector2(
-                (i % 4) * destinationSpace.x,
-                (i - i % 4) / 4 * destinationSpace.y);
+                    (i % 4) * destinationSpace.x,
+                    (i - i % 4) / 4 * destinationSpace.y));
         }
     }
 
