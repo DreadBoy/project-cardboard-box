@@ -5,14 +5,14 @@ using UnityEngine.Networking.NetworkSystem;
 using ProjectCardboardBox;
 using System.Linq;
 
-public class NetworkBehaviour : NetworkManager
+public class NetworkBehaviour : NetworkManager, INeedGameBehaviour
 {
     NetworkConnection connection;
     OverriddenNetworkDiscovery discovery;
 
     public int key;
 
-    GameBehaviour game;
+    public GameBehaviour gameBehaviour { get; set; }
     public GameUIBehaviour gameUiBehaviour;
 
     void Start()
@@ -24,7 +24,7 @@ public class NetworkBehaviour : NetworkManager
         discovery.StartAsClient();
         discovery.OnDiscovered += OnDiscovered;
 
-        game = FindObjectOfType<GameBehaviour>();
+        gameBehaviour = FindObjectOfType<GameBehaviour>();
         if (gameUiBehaviour == null)
             gameUiBehaviour = FindObjectOfType<GameUIBehaviour>();
     }
@@ -33,7 +33,7 @@ public class NetworkBehaviour : NetworkManager
     private void OnDiscovered(string address)
     {
         discovery.StopBroadcast();
-        game.GameFound(address);
+        gameBehaviour.GameFound(address);
     }
 
     public bool JoinGame(string address)
@@ -78,7 +78,7 @@ public class NetworkBehaviour : NetworkManager
     {
         base.OnClientDisconnect(conn);
         StopClient();
-        game.GameLost();
+        gameBehaviour.GameLost();
         discovery.Initialize();
         discovery.StartAsClient();
     }

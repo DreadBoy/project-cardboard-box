@@ -60,26 +60,7 @@ public class GameUIBehaviour : MonoBehaviour
         destinationChips.Clear();
         sourceChips.Clear();
     }
-
-    //Vector2 GetChipLocalPosition(ChipBehaviour chip)
-    //{
-    //    var index = -1;
-    //    index = sourceChips.IndexOf(chip);
-    //    if (index >= 0)
-    //    {
-    //        return new Vector2(
-    //            (index % 4) * sourceSpace.x,
-    //            (index - index % 4) / 4 * sourceSpace.y);
-    //    }
-    //    else
-    //        index = destinationChips.IndexOf(chip);
-    //    if(index >= 0)
-    //    {
-    //        return Vector2.zero;
-    //    }
-    //    return Vector2.zero;
-    //}
-
+    
     public void UpdateChips()
     {
         for (int i = 0; i < sourceChips.Count; i++)
