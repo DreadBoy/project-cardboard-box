@@ -57,16 +57,4 @@ public class ChipBehaviour : MonoBehaviour
             3000,
             Vector2.Distance(anchoredPosition, rectTransform.anchoredPosition));
     }
-
-    public void AnchorLeftTop()
-    {
-        rectTransform.anchorMin = new Vector2(0, 1);
-        rectTransform.anchorMax = new Vector2(0, 1);
-    }
-
-    public void AnchorLeftBottom()
-    {
-        rectTransform.anchorMin = new Vector2(0, 0);
-        rectTransform.anchorMax = new Vector2(0, 0);
-    }
 }
