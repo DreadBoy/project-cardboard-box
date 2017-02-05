@@ -12,7 +12,7 @@ public class PlayerBehaviour : MonoBehaviour
     float speed = 4f;
     float rotationspeed = 1.5f;
 
-    int x, y;
+    int x = -1, y = -1;
     public bool IsOnSpot(int x, int y)
     {
         return this.x == x && this.y == y;
@@ -35,6 +35,7 @@ public class PlayerBehaviour : MonoBehaviour
     public SmartEvent<ChipsArgs> chipsEvent = new SmartEvent<ChipsArgs>();
 
     public Animator animator;
+    public Vector3 velocity = Vector3.zero;
 
     void Awake()
     {
@@ -63,9 +64,7 @@ public class PlayerBehaviour : MonoBehaviour
                 transform.localPosition = lerpPosition.Lerp();
                 if (lerpPosition.IsDone())
                 {
-                    lerpPosition = null;
-                    runningCommand = false;
-                    animator.SetBool("Moving", false);
+                    StopMoving();
                 }
             }
 
@@ -75,9 +74,7 @@ public class PlayerBehaviour : MonoBehaviour
                 transform.localRotation = lerpRotation.Lerp();
                 if (lerpRotation.IsDone())
                 {
-                    lerpRotation = null;
-                    runningCommand = false;
-                    animator.SetBool("Moving", false);
+                    StopRotating();
                 }
             }
         }
@@ -109,6 +106,13 @@ public class PlayerBehaviour : MonoBehaviour
             //NOTE You can generate chips based on current situation
             chipsEvent.RaiseEvent(new ChipsArgs(GenerateChips(command.number), this));
         }
+    }
+
+    public void CancelAndClearCommands()
+    {
+        commandQueue.Clear();
+        StopMoving();
+        StopRotating();
     }
 
     List<Chip> GenerateChips(int number)
@@ -204,12 +208,22 @@ public class PlayerBehaviour : MonoBehaviour
         y = newy;
 
         lerpPosition = new LerpHelper<Vector3>(transform.localPosition, grid.FromPlayerPosition(newx, newy), Vector3.Lerp, speed, Vector3.Distance(grid.FromPlayerPosition(newx, newy), transform.localPosition));
+        velocity = (grid.FromPlayerPosition(newx, newy) - transform.localPosition).normalized;
+
         //TODO Some static value?
         animator.SetBool("Moving", true);
 
         runningCommand = true;
 
         return true;
+    }
+
+    void StopMoving()
+    {
+        lerpPosition = null;
+        runningCommand = false;
+        velocity = Vector3.zero;
+        animator.SetBool("Moving", false);
     }
 
     public void RotatePlayer(int quarter)
@@ -226,5 +240,43 @@ public class PlayerBehaviour : MonoBehaviour
         animator.SetBool("Moving", true);
 
         runningCommand = true;
+    }
+
+    void StopRotating()
+    {
+        lerpRotation = null;
+        runningCommand = false;
+        velocity = Vector3.zero;
+        animator.SetBool("Moving", false);
+    }
+
+    public void BounceIntoDirection(Vector3 direction)
+    {
+        CancelAndClearCommands();
+
+        var spreadVector = direction;
+        spreadVector.x = (int)Mathf.Abs(spreadVector.x);
+        spreadVector.z = (int)Mathf.Abs(spreadVector.z);
+        spreadVector.y = spreadVector.x;
+        spreadVector.x = spreadVector.z;
+        spreadVector.z = spreadVector.y;
+
+        var length = Random.Range(1, 3);
+        var spread = Random.Range(-2, 2);
+
+        var landing = direction * length + spreadVector * spread;
+        landing += new Vector3(x, 0, y);
+        Debug.Log(landing);
+
+        if (grid.IsSpotFree((int)landing.x, (int)landing.z))
+        {
+            lerpPosition = new LerpHelper<Vector3>(
+                transform.localPosition, 
+                grid.FromPlayerPosition((int)landing.x, (int)landing.z), 
+                Vector3.Lerp, 
+                speed * 3, 
+                Vector3.Distance(grid.FromPlayerPosition((int)landing.x, (int)landing.z), transform.localPosition));
+            velocity = (grid.FromPlayerPosition((int)landing.x, (int)landing.z) - transform.localPosition).normalized;
+        }
     }
 }

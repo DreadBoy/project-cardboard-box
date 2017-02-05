@@ -8,18 +8,24 @@ public class GridBehaviour : MonoBehaviour
 {
 
     public GameObject cell;
+    public GameObject cellContainer;
     public Vector3 offset = new Vector3(2.95f, 0, 2.95f);
     Vector3 origin;
 
-    List<PlayerBehaviour> players = new List<PlayerBehaviour>();
+    public List<PlayerBehaviour> players = new List<PlayerBehaviour>();
 
     GameBehaviour game;
+    PlayerSpawner playerSpawner;
 
     System.Random random;
 
     void Start()
     {
-        game = FindObjectOfType<GameBehaviour>();
+        if (game == null)
+            game = FindObjectOfType<GameBehaviour>();
+        if (playerSpawner == null)
+            playerSpawner = GetComponents<PlayerSpawner>().First(p => p.enabled);
+
         game.changeStateEvent.Event += ChangeStateEvent;
         random = new System.Random();
 
@@ -53,7 +59,7 @@ public class GridBehaviour : MonoBehaviour
                 current.Set(x, 0, y);
                 current.x *= offset.x;
                 current.z *= offset.z;
-                var c = Instantiate(cell, transform);
+                var c = Instantiate(cell, cellContainer != null ? cellContainer.transform : transform);
                 c.transform.position = start + current;
             }
 
@@ -79,7 +85,8 @@ public class GridBehaviour : MonoBehaviour
     {
         players.Add(player);
         player.transform.parent = transform;
-        SpawnPlayerOnGrid(player);
+        player.gameObject.name = "Player " +  players.Count.ToString();
+        playerSpawner.SpawnPlayerOnGrid(player);
     }
 
     public void RemovePlayerToGrid(PlayerBehaviour player)
@@ -93,50 +100,13 @@ public class GridBehaviour : MonoBehaviour
         return ret;
     }
 
-    public bool SpawnPlayerOnGrid(PlayerBehaviour player)
+    public bool IsSpotFree(int x, int y)
     {
-        //you already need reference to that player
-        if (players.Find(pl => pl == player) == null)
-            return false;
-
-        List<int> x_all = Enumerable.Range(0, game.gridSize).ToList();
-        List<int> y_all = Enumerable.Range(0, game.gridSize).ToList();
-
-        while (x_all.Count > 0 && y_all.Count > 0)
-        {
-            var x = random.Next(x_all.Count);
-            var y = random.Next(y_all.Count);
-
-            if (players.Find(p => p.IsOnSpot(x, y)) != null)
-                //if (grid[x, y] == null)
-                return false;
-
-            x_all.Remove(x);
-            y_all.Remove(y);
-            return SpawnPlayerOnGrid(player, x, y);
-
-
-        }
-
-        return false;
-    }
-
-    public bool SpawnPlayerOnGrid(PlayerBehaviour player, int x, int y)
-    {
-        //you already need reference to that player
-        if (players.Find(pl => pl == player) == null)
-            return false;
-
-        if (x < 0 || x >= game.gridSize)
-            return false;
-        if (y < 0 || y >= game.gridSize)
-            return false;
+        //TODO check environment
 
         if (players.Find(p => p.IsOnSpot(x, y)) != null)
-            //if (grid[x, y] != null)
             return false;
 
-        player.SpawnPlayer(x, y);
         return true;
     }
 }
