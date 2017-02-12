@@ -9,15 +9,20 @@ public class PlayerBehaviour : MonoBehaviour
     public GameBehaviour game;
     public GridBehaviour grid;
 
-    float speed = 4f;
+    float speed = 3.5f;
     float rotationspeed = 1.5f;
 
-    int x = -1, y = -1;
-    public bool IsOnSpot(int x, int y)
-    {
-        return this.x == x && this.y == y;
-    }
-    int angle = 0;
+    /// <summary>
+    /// Is in degrees and always between 0 and 360
+    /// </summary>
+    public int angle { get; set; }
+
+    /// <summary>
+    /// Tells how much player should move ahead
+    /// Changed to > 0 when receiving command
+    /// If 0, player shouldn't move at all
+    /// </summary>
+    float distance { get; set; }
 
     public enum State
     {
@@ -29,8 +34,8 @@ public class PlayerBehaviour : MonoBehaviour
 
     bool runningCommand = false;
     Queue<Command> commandQueue = new Queue<Command>();
-    LerpHelper<Vector3> lerpPosition = null;
     LerpHelper<Quaternion> lerpRotation = null;
+    LerpHelper<Vector3> lerpBounce = null;
 
     public SmartEvent<ChipsArgs> chipsEvent = new SmartEvent<ChipsArgs>();
 
@@ -58,13 +63,22 @@ public class PlayerBehaviour : MonoBehaviour
             if (!runningCommand && commandQueue.Count > 0)
                 ReceiveCommand(commandQueue.Dequeue());
 
-            if (lerpPosition != null)
+            if (lerpBounce != null)
             {
-                lerpPosition.Update(Time.deltaTime);
-                transform.localPosition = lerpPosition.Lerp();
-                if (lerpPosition.IsDone())
+                lerpBounce.Update(Time.deltaTime);
+                transform.position = lerpBounce.Lerp();
+                if (lerpBounce.IsDone())
+                    StopBounce();
+            }
+
+            if (distance > 0)
+            {
+                transform.position += transform.forward * Time.deltaTime * speed;
+                distance -= Time.deltaTime * speed;
+                if (distance <= 0)
                 {
                     StopMoving();
+                    SnapToGrid();
                 }
             }
 
@@ -154,11 +168,9 @@ public class PlayerBehaviour : MonoBehaviour
     }
 
 
-    public void SpawnPlayer(int x, int y)
+    public void SpawnPlayer(Vector3 position)
     {
-        this.x = x;
-        this.y = y;
-        transform.localPosition = grid.FromPlayerPosition(x, y);
+        transform.position = position;
         transform.localRotation = Quaternion.Euler(0, 90 * angle, 0);
     }
 
@@ -169,50 +181,22 @@ public class PlayerBehaviour : MonoBehaviour
 
     public bool MovePlayer(int number)
     {
-        int newx = x, newy = y;
+        var target = Vector3.zero;
 
-        var looking = (angle % 360) / 90;
-        //looking up
-        if (looking == 0)
-        {
-            newy = y + number;
-            newx = x;
-        }
-        if (looking == 1)
-        {
-            newx = x + number;
-            newy = y;
-        }
-        if (looking == 2)
-        {
-            newy = y - number;
-            newx = x;
-        }
-        if (looking == 3)
-        {
-            newx = x - number;
-            newy = y;
-        }
+        if (angle % 90 == 0 || angle % 90 == 180)
+            target = transform.position + transform.forward * number * grid.offset.z;
+        else if (angle % 90 == 90 || angle % 90 == 270)
+            target = transform.position + transform.forward * number * grid.offset.x;
+        else //we are still rotating??
+            return false;
 
-
-        if (newx < 0)
-            newx = 0;
-        if (newx >= game.gridSize)
-            newx = game.gridSize - 1;
-        if (newy < 0)
-            newy = 0;
-        if (newy >= game.gridSize)
-            newy = game.gridSize - 1;
-
-        x = newx;
-        y = newy;
-
-        lerpPosition = new LerpHelper<Vector3>(transform.localPosition, grid.FromPlayerPosition(newx, newy), Vector3.Lerp, speed, Vector3.Distance(grid.FromPlayerPosition(newx, newy), transform.localPosition));
-        velocity = (grid.FromPlayerPosition(newx, newy) - transform.localPosition).normalized;
+        target = grid.SnapToGrid(target);
+        distance = Vector3.Distance(target, transform.position);
 
         //TODO Some static value?
         animator.SetBool("Moving", true);
 
+        velocity = transform.forward * speed;
         runningCommand = true;
 
         return true;
@@ -220,10 +204,24 @@ public class PlayerBehaviour : MonoBehaviour
 
     void StopMoving()
     {
-        lerpPosition = null;
+        distance = 0;
         runningCommand = false;
         velocity = Vector3.zero;
         animator.SetBool("Moving", false);
+    }
+
+    void StopBounce()
+    {
+        lerpBounce = null;
+        runningCommand = false;
+        velocity = Vector3.zero;
+        animator.SetBool("Bouncing", false);
+
+        Vector3 pos;
+        if (grid.TrySnapToGrid(transform.position, out pos))
+            return;
+        // We are outside of grid
+        Die();
     }
 
     public void RotatePlayer(int quarter)
@@ -250,33 +248,45 @@ public class PlayerBehaviour : MonoBehaviour
         animator.SetBool("Moving", false);
     }
 
+
+    void SnapToGrid()
+    {
+        transform.position = grid.SnapToGrid(transform.position);
+    }
+
     public void BounceIntoDirection(Vector3 direction)
     {
         CancelAndClearCommands();
 
-        var spreadVector = direction;
-        spreadVector.x = (int)Mathf.Abs(spreadVector.x);
-        spreadVector.z = (int)Mathf.Abs(spreadVector.z);
-        spreadVector.y = spreadVector.x;
-        spreadVector.x = spreadVector.z;
-        spreadVector.z = spreadVector.y;
+        // perpendicular to bounce direction
+        //var spreadVector = direction;
+        //spreadVector.x = (int)Mathf.Abs(spreadVector.x);
+        //spreadVector.z = (int)Mathf.Abs(spreadVector.z);
+        //spreadVector.y = spreadVector.x;
+        //spreadVector.x = spreadVector.z;
+        //spreadVector.z = spreadVector.y;
 
         var length = Random.Range(1, 3);
-        var spread = Random.Range(-2, 2);
+        //var spread = Random.Range(-2, 2);
+        //spread = 0;
 
-        var landing = direction * length + spreadVector * spread;
-        landing += new Vector3(x, 0, y);
-        Debug.Log(landing);
+        var landing = direction * length/* + spreadVector * spread*/;
+        grid.TrySnapToGrid(transform.position + landing, out landing);
 
-        if (grid.IsSpotFree((int)landing.x, (int)landing.z))
-        {
-            lerpPosition = new LerpHelper<Vector3>(
-                transform.localPosition, 
-                grid.FromPlayerPosition((int)landing.x, (int)landing.z), 
-                Vector3.Lerp, 
-                speed * 3, 
-                Vector3.Distance(grid.FromPlayerPosition((int)landing.x, (int)landing.z), transform.localPosition));
-            velocity = (grid.FromPlayerPosition((int)landing.x, (int)landing.z) - transform.localPosition).normalized;
-        }
+
+        lerpBounce = new LerpHelper<Vector3>(
+            transform.position,
+            landing,
+            Vector3.Lerp,
+            speed * 3,
+            Vector3.Distance(landing, transform.position));
+        velocity = (landing - transform.position).normalized;
+        runningCommand = true;
+        animator.SetBool("Bouncing", true);
+    }
+
+    void Die()
+    {
+        animator.SetTrigger("Dead");
     }
 }

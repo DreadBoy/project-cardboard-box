@@ -85,7 +85,7 @@ public class GridBehaviour : MonoBehaviour
     {
         players.Add(player);
         player.transform.parent = transform;
-        player.gameObject.name = "Player " +  players.Count.ToString();
+        player.gameObject.name = "Player " + players.Count.ToString();
         playerSpawner.SpawnPlayerOnGrid(player);
     }
 
@@ -94,19 +94,94 @@ public class GridBehaviour : MonoBehaviour
         players.Remove(player);
     }
 
-    public Vector3 FromPlayerPosition(int x, int y)
+    public Vector3 FromCellNumbers(int x, int z)
     {
-        var ret = origin + new Vector3((float)x * offset.x, 0, (float)y * offset.z);
+        var ret = transform.position + new Vector3(x * offset.x, 0, z * offset.z) + origin;
         return ret;
+    }
+
+    public Vector3 FromCellNumbers(Vector3 cellNumbers)
+    {
+        return FromCellNumbers((int)cellNumbers.x, (int)cellNumbers.z);
     }
 
     public bool IsSpotFree(int x, int y)
     {
-        //TODO check environment
+        var center = offset;
+        center.x *= x;
+        center.z *= y;
+        center.y = offset.x / 2;
+        center += transform.position + origin;
+        var colliders = Physics.OverlapBox(center, new Vector3(offset.x / 2, offset.x / 2, offset.x / 2), Quaternion.identity, int.MaxValue, QueryTriggerInteraction.Collide);
+        foreach (var collider in colliders)
+        {
+            return false;
+        }
 
-        if (players.Find(p => p.IsOnSpot(x, y)) != null)
+        return true;
+    }
+
+    /// <summary>
+    /// Returns cell numbers from object's position
+    /// Use FromCellNumbers to get object's world position
+    /// </summary>
+    /// <param name="position">Global postion of object</param>
+    /// <returns></returns>
+    public Vector3 GetCellNumbers(Vector3 position)
+    {
+        position -= transform.position + origin;
+
+        var x = Mathf.Round(position.x / offset.x);
+        if (x < 0)
+            x = 0;
+        if (x >= game.gridSize)
+            x = game.gridSize - 1;
+        var z = Mathf.Round(position.z / offset.z);
+        if (z < 0)
+            z = 0;
+        if (z >= game.gridSize)
+            z = game.gridSize - 1;
+
+        return new Vector3(x, 0, z);
+    }
+
+    /// <summary>
+    /// Returns vector that is centered on nearest cell
+    /// Always returns position inside grid
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
+    public Vector3 SnapToGrid(Vector3 position)
+    {
+        return FromCellNumbers(GetCellNumbers(position));
+    }
+
+    public bool IsInsideGrid(Vector3 position)
+    {
+        position -= transform.position + origin;
+
+        var x = Mathf.Round(position.x / offset.x);
+        if (x < 0)
+            return false;
+        if (x >= game.gridSize)
+            return false;
+        var z = Mathf.Round(position.z / offset.z);
+        if (z < 0)
+            return false;
+        if (z >= game.gridSize)
             return false;
 
+        return true;
+    }
+
+    public bool TrySnapToGrid(Vector3 position, out Vector3 snappedPosition)
+    {
+        if (!IsInsideGrid(position))
+        {
+            snappedPosition = position;
+            return false;
+        }
+        snappedPosition = SnapToGrid(position);
         return true;
     }
 }

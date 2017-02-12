@@ -18,8 +18,7 @@ public class PlayerSpawnerMock : PlayerSpawner
         if (gridBehaviour.players.Find(pl => pl == player) == null)
             return false;
 
-        //this spot is occupied
-        if (gridBehaviour.players.Find(p => p.IsOnSpot((int)spawnPoints[0].x, (int)spawnPoints[0].y)) != null)
+        if (!gridBehaviour.IsSpotFree((int)spawnPoints[0].x, (int)spawnPoints[0].y))
             return false;
 
         var point = spawnPoints[0];

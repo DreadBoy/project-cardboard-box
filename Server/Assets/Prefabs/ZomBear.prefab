@@ -133,6 +133,7 @@ MonoBehaviour:
   grid: {fileID: 0}
   state: 0
   animator: {fileID: 0}
+  velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &114991925980907306
 MonoBehaviour:
   m_ObjectHideFlags: 1

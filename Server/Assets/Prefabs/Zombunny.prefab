@@ -144,6 +144,7 @@ MonoBehaviour:
   grid: {fileID: 0}
   state: 0
   animator: {fileID: 0}
+  velocity: {x: 0, y: 0, z: 0}
 --- !u!137 &137612861821735618
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
