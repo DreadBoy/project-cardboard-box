@@ -33,11 +33,13 @@ namespace ProjectCardboardBox
             return $"{type.ToString()}:{number}";
         }
 
-        public static bool TryParse(ref List<Command> commands, Chip[] hand)
+        public static bool TryParse(out List<Command> commands, Chip[] hand)
         {
             commands = new List<Command>();
             List<Chip> buffer = new List<Chip>();
 
+            if (hand.Length == 0)
+                return false;
             for (int i = 0; i < hand.Length; i++)
             {
                 var chip = hand[i];
@@ -92,6 +94,18 @@ namespace ProjectCardboardBox
                 return false;
             }
 
+            return true;
+        }
+
+        public static bool IsNextChipValid(Chip[] hand, Chip next)
+        {
+            if (hand.Length == 0 && next.type == Chip.Type.Number)
+                return false;
+            else if (hand.Length == 0)
+                return true;
+            var last = hand[hand.Length - 1];
+            if (last.type == Chip.Type.Action && next.type == Chip.Type.Action)
+                return false;
             return true;
         }
     }

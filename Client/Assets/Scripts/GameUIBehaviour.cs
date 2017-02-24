@@ -8,6 +8,7 @@ using System.Linq;
 public class GameUIBehaviour : MonoBehaviour
 {
     NetworkBehaviour networkBehaviour;
+    public SendButtonBehaviour sendButton;
 
     public ChipBehaviour chipPrefab;
 
@@ -23,6 +24,8 @@ public class GameUIBehaviour : MonoBehaviour
     void Start()
     {
         networkBehaviour = FindObjectOfType<NetworkBehaviour>();
+        if (sendButton == null)
+            sendButton = FindObjectOfType<SendButtonBehaviour>();
     }
 
     public void OnHandReceived(List<Chip> chips)
@@ -51,6 +54,7 @@ public class GameUIBehaviour : MonoBehaviour
             sourceChips.Add(chip);
         }
         UpdateChips();
+        UpdateSendButton();
     }
 
     internal void ClearAll()
@@ -73,6 +77,7 @@ public class GameUIBehaviour : MonoBehaviour
                 new Vector2(
                     (i % 4) * sourceSpace.x,
                     (i - i % 4) / 4 * sourceSpace.y));
+            chip.Valid = Command.IsNextChipValid(destinationChips.Select(c => c.chip).ToArray(), chip.chip);
         }
 
         for (int i = 0; i < destinationChips.Count; i++)
@@ -88,6 +93,13 @@ public class GameUIBehaviour : MonoBehaviour
         }
     }
 
+    void UpdateSendButton()
+    {
+        List<Command> commands;
+        var valid = Command.TryParse(out commands, destinationChips.Select(c => c.chip).ToArray());
+        sendButton.Valid = valid;
+    }
+
     void DestroyChips(List<ChipBehaviour> chips)
     {
         chips.ForEach(c => Destroy(c.gameObject));
@@ -95,8 +107,8 @@ public class GameUIBehaviour : MonoBehaviour
 
     public void SendCommands()
     {
-        List<Command> commands = new List<Command>();
-        if (Command.TryParse(ref commands, destinationChips.Select(c => c.chip).ToArray()))
+        List<Command> commands;
+        if (Command.TryParse(out commands, destinationChips.Select(c => c.chip).ToArray()))
         {
             commands.Insert(0, new Command(ProjectCardboardBox.Action.REQUESTCHIPS, destinationChips.Count));
             networkBehaviour.SendCommands(commands.ToArray());

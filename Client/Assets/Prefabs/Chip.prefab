@@ -58,8 +58,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0e380917c3372b4da43d90f98d3cbc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rectTransform: {fileID: 0}
-  text: {fileID: 0}
+  rectTransform: {fileID: 224322128759500852}
+  text: {fileID: 114676299126727926}
+  button: {fileID: 114933351341326376}
 --- !u!114 &114638895967486524
 MonoBehaviour:
   m_ObjectHideFlags: 1

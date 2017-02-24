@@ -10,15 +10,34 @@ public class ChipBehaviour : MonoBehaviour
     public Chip chip;
     public RectTransform rectTransform;
     public Text text;
+    public Button button;
 
     LerpHelper<Vector2> lerpPosition;
 
     GameUIBehaviour gameUiBehaviour;
 
+    private bool _enabled = true;
+    public bool Valid
+    {
+        get
+        {
+            return _enabled;
+        }
+        set
+        {
+            _enabled = value;
+            button.interactable = value;
+        }
+    }
+
     void OnEnable()
     {
-        rectTransform = GetComponent<RectTransform>();
-        text = GetComponentInChildren<Text>();
+        if (rectTransform == null)
+            rectTransform = GetComponent<RectTransform>();
+        if (text == null)
+            text = GetComponentInChildren<Text>();
+        if (button == null)
+            button = GetComponent<Button>();
     }
 
 
@@ -57,4 +76,6 @@ public class ChipBehaviour : MonoBehaviour
             3000,
             Vector2.Distance(anchoredPosition, rectTransform.anchoredPosition));
     }
+
+
 }
