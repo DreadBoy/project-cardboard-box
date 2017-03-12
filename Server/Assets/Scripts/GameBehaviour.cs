@@ -46,10 +46,11 @@ public class GameBehaviour : MonoBehaviour
 
         //Create players and add them to lobby
         var player = Instantiate(playerPrefab) as PlayerBehaviour;
+        player.name = "Player " + players.Count;
+        connection.player = player;
         lobby.AddPlayerToLobby(player);
         players.Add(player);
         connections.Add(connection);
-        connection.player = player;
 
         //subscribe to player's connection
         connection.CommandReceived.Event += CommandReceived_Event;

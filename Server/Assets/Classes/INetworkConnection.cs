@@ -22,6 +22,7 @@ public class SmartConnection : INetworkConnection
         CommandReceived = new SmartEvent<CommandArgs>();
         conn = connection;
         conn.RegisterHandler(MessageType.Command, OnCommandReceived);
+        Debug.Log("Registered handler for connection " + conn.connectionId);
     }
 
     public void Send(short msgType, MessageBase message)
@@ -42,7 +43,7 @@ public class SmartConnection : INetworkConnection
         foreach (var command in commands)
         {
             CommandReceived.RaiseEvent(new CommandArgs(command, player));
-            Debug.Log("Received :" + command);
+            Debug.Log("Received :" + command + " from connection " + conn.connectionId);
         }
     }
 }

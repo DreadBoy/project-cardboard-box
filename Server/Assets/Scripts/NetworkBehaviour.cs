@@ -37,7 +37,7 @@ public class NetworkBehaviour : NetworkManager
         game.PlayerConnect(sconn);
         conns.Add(sconn);
         conn.Send(MessageType.Handshake, new StringMessage("Hello client!"));
-        Debug.Log("Client connected");
+        Debug.Log("Client connected on connection " + conn.connectionId);
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
@@ -47,7 +47,7 @@ public class NetworkBehaviour : NetworkManager
         var sconn = conns.Find(sc => sc.HasConnection(conn));
         conns.Remove(sconn);
         game.PlayerDisconnect(sconn);
-        Debug.Log("Client disconnected");
+        Debug.Log("Client disconnected on connection " + conn.connectionId);
     }
 
 }
