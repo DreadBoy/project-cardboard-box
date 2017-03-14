@@ -1,4 +1,5 @@
-﻿using ProjectCardboardBox;
+﻿using LiteNetLib;
+using ProjectCardboardBox;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -13,38 +14,38 @@ public interface INetworkConnection
 
 public class SmartConnection : INetworkConnection
 {
-    private NetworkConnection conn { get; set; }
+    public NetPeer peer { get; set; }
     public SmartEvent<CommandArgs> CommandReceived { get; set; }
     public PlayerBehaviour player { get; set; }
 
-    public SmartConnection(NetworkConnection connection)
+    public SmartConnection(NetPeer peer)
     {
         CommandReceived = new SmartEvent<CommandArgs>();
-        conn = connection;
-        conn.RegisterHandler(MessageType.Command, OnCommandReceived);
-        Debug.Log("Registered handler for connection " + conn.connectionId);
+        this.peer = peer;
+        //conn.RegisterHandler(MessageType.Command, OnCommandReceived);
+        //Debug.Log("Registered handler for connection " + conn.connectionId);
     }
 
     public void Send(short msgType, MessageBase message)
     {
-        conn.Send(msgType, message);
+        //conn.Send(msgType, message);
     }
 
-    public bool HasConnection(NetworkConnection conn)
+    public bool HasPeer(NetPeer peer)
     {
-        return conn == this.conn;
+        return peer == this.peer;
     }
 
     void OnCommandReceived(NetworkMessage netMsg)
     {
-        var message = netMsg.ReadMessage<StringMessage>().value;
-        var comms = message.Split('|');
-        var commands = comms.Select(p => new Command(p)).ToArray();
-        foreach (var command in commands)
-        {
-            CommandReceived.RaiseEvent(new CommandArgs(command, player));
-            Debug.Log("Received :" + command + " from connection " + conn.connectionId);
-        }
+        //var message = netMsg.ReadMessage<StringMessage>().value;
+        //var comms = message.Split('|');
+        //var commands = comms.Select(p => new Command(p)).ToArray();
+        //foreach (var command in commands)
+        //{
+        //    CommandReceived.RaiseEvent(new CommandArgs(command, player));
+        //    Debug.Log("Received :" + command + " from connection " + conn.connectionId);
+        //}
     }
 }
 
