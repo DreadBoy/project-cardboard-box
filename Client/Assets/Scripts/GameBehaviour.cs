@@ -1,15 +1,17 @@
-﻿using ProjectCardboardBox;
+﻿using LiteNetLib;
+using ProjectCardboardBox;
 using System;
 using UnityEngine;
 
-public class GameBehaviour : MonoBehaviour {
+public class GameBehaviour : MonoBehaviour
+{
 
 
     public NetworkBehaviour networkBehaviour;
     public UIBehaviour uiBehaviour;
     public LobbyUIBehaviour lobbyUiBehaviour;
 
-    string address;
+    NetEndPoint remoteEndPoint;
 
     public enum State
     {
@@ -18,20 +20,22 @@ public class GameBehaviour : MonoBehaviour {
     }
     public State state = State.lobby;
 
-    void Start () {
+    void Start()
+    {
         networkBehaviour = FindObjectOfType<NetworkBehaviour>();
         uiBehaviour = FindObjectOfType<UIBehaviour>();
         lobbyUiBehaviour = FindObjectOfType<LobbyUIBehaviour>();
     }
-	
-	void Update () {
-		
-	}
 
-    public void GameFound(string address)
+    void Update()
+    {
+
+    }
+
+    public void GameFound(NetEndPoint remoteEndPoint)
     {
         lobbyUiBehaviour.Found();
-        this.address = address;
+        this.remoteEndPoint = remoteEndPoint;
     }
 
     public void GameLost()
@@ -42,8 +46,8 @@ public class GameBehaviour : MonoBehaviour {
 
     public void JoinGame()
     {
-        if (networkBehaviour.JoinGame(address))
-            lobbyUiBehaviour.Waiting();
+        networkBehaviour.JoinGame(remoteEndPoint);
+        lobbyUiBehaviour.Waiting();
     }
 
     public void ReadyToPlay()

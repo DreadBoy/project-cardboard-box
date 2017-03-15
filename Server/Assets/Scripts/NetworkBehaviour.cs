@@ -2,8 +2,6 @@
 using ProjectCardboardBox;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.Networking.NetworkSystem;
 using System.Linq;
 using LiteNetLib.Utils;
 
@@ -30,7 +28,6 @@ public class NetworkBehaviour : MonoBehaviour
             var sconn = new SmartConnection(peer);
             game.PlayerConnect(sconn);
             conns.Add(sconn);
-            //conn.Send(MessageType.Handshake, new StringMessage("Hello client!"));
             Debug.Log("Client connected as peer " + peer.ConnectId);
             NetDataWriter writer = new NetDataWriter();                 // Create writer class
             writer.Put("Hello client!");                                // Put some string
@@ -48,6 +45,7 @@ public class NetworkBehaviour : MonoBehaviour
         listener.NetworkReceiveEvent += (peer, reader) =>
         {
             Debug.Log("Got: " + string.Join(", ", reader.Data.Select(b => b.ToString()).ToArray()));
+            conns.First(c => c.HasPeer(peer)).OnCommandReceived(reader.GetString(10000));
         };
 
         listener.NetworkReceiveUnconnectedEvent += (NetEndPoint remoteEndPoint, NetDataReader reader, UnconnectedMessageType messageType) =>

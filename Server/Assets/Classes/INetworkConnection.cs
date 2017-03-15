@@ -1,15 +1,15 @@
 ﻿using LiteNetLib;
+using LiteNetLib.Utils;
 using ProjectCardboardBox;
 using System.Linq;
+using System.Text;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.Networking.NetworkSystem;
 
 public interface INetworkConnection
 {
     SmartEvent<CommandArgs> CommandReceived { get; set; }
     PlayerBehaviour player { get; set; }
-    void Send(short msgType, MessageBase message);
+    void Send(short msgType, string message);
 }
 
 public class SmartConnection : INetworkConnection
@@ -22,13 +22,13 @@ public class SmartConnection : INetworkConnection
     {
         CommandReceived = new SmartEvent<CommandArgs>();
         this.peer = peer;
-        //conn.RegisterHandler(MessageType.Command, OnCommandReceived);
-        //Debug.Log("Registered handler for connection " + conn.connectionId);
     }
 
-    public void Send(short msgType, MessageBase message)
+    public void Send(short msgType, string message)
     {
-        //conn.Send(msgType, message);
+        NetDataWriter writer = new NetDataWriter();
+        writer.Put(message);
+        peer.Send(writer, SendOptions.ReliableOrdered);
     }
 
     public bool HasPeer(NetPeer peer)
@@ -36,16 +36,14 @@ public class SmartConnection : INetworkConnection
         return peer == this.peer;
     }
 
-    void OnCommandReceived(NetworkMessage netMsg)
+    public void OnCommandReceived(string message)
     {
-        //var message = netMsg.ReadMessage<StringMessage>().value;
-        //var comms = message.Split('|');
-        //var commands = comms.Select(p => new Command(p)).ToArray();
-        //foreach (var command in commands)
-        //{
-        //    CommandReceived.RaiseEvent(new CommandArgs(command, player));
-        //    Debug.Log("Received :" + command + " from connection " + conn.connectionId);
-        //}
+        var comms = message.Split('|');
+        var commands = comms.Select(p => new Command(p)).ToArray();
+        foreach (var command in commands)
+        {
+            CommandReceived.RaiseEvent(new CommandArgs(command, player));
+        }
     }
 }
 
@@ -59,7 +57,7 @@ public class MockConnection : INetworkConnection
         CommandReceived = new SmartEvent<CommandArgs>();
     }
 
-    public void Send(short msgType, MessageBase message)
+    public void Send(short msgType, string message)
     {
         Debug.Log("(Mock connection) Sending network message " + msgType + ": " + message.ToString());
     }

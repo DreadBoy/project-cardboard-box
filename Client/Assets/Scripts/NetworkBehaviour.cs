@@ -1,99 +1,77 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.Networking.NetworkSystem;
 using ProjectCardboardBox;
 using System.Linq;
+using LiteNetLib;
+using LiteNetLib.Utils;
 
-public class NetworkBehaviour : NetworkManager, INeedGameBehaviour
+public class NetworkBehaviour : MonoBehaviour
 {
-    NetworkConnection connection;
-    OverriddenNetworkDiscovery discovery;
-
-    public int key;
+    EventBasedNetListener listener = new EventBasedNetListener();
+    NetManager client;
 
     public GameBehaviour gameBehaviour { get; set; }
     public GameUIBehaviour gameUiBehaviour;
 
     void Start()
     {
-        discovery = gameObject.AddComponent<OverriddenNetworkDiscovery>() as OverriddenNetworkDiscovery;
-        discovery.showGUI = false;
-        discovery.Initialize();
-        discovery.broadcastKey = key;
-        discovery.StartAsClient();
-        discovery.OnDiscovered += OnDiscovered;
-
         gameBehaviour = FindObjectOfType<GameBehaviour>();
         if (gameUiBehaviour == null)
             gameUiBehaviour = FindObjectOfType<GameUIBehaviour>();
-    }
 
+        client = new NetManager(listener, "SomeConnectionKey");
+        client.Start();
 
-    private void OnDiscovered(string address)
-    {
-        discovery.StopBroadcast();
-        gameBehaviour.GameFound(address);
-    }
-
-    public bool JoinGame(string address)
-    {
-        try
+        listener.NetworkReceiveEvent += (fromPeer, dataReader) =>
         {
-            networkAddress = address;
-            StartClient();
-            return true;
-        }
-        catch (Exception e)
+            Debug.Log("We got: " + dataReader.GetString(100 /* max length of string */));
+            OnHandReceived(dataReader.GetString(10000));
+        };
+
+        listener.NetworkReceiveUnconnectedEvent += (NetEndPoint remoteEndPoint, NetDataReader reader, UnconnectedMessageType messageType) =>
         {
-            Debug.LogError(e.Message);
-            return false;
-        }
+            Debug.Log(string.Format("[Client] ReceiveUnconnected {0}. From: {1}. Data: {2}", messageType, remoteEndPoint, reader.GetString(100)));
+            if (messageType == UnconnectedMessageType.DiscoveryResponse)
+            {
+                gameBehaviour.GameFound(remoteEndPoint);
+                //conn.RegisterHandler(MessageType.Hand, OnHandReceived);
+                //conn.RegisterHandler(MessageType.Handshake, OnHandshakeReceived);
+            }
+        };
+        
+        NetDataWriter writer = new NetDataWriter();
+        writer.Put("CLIENT 1 DISCOVERY REQUEST");
+        client.SendDiscoveryRequest(writer, 9050);
     }
 
-    public override void OnClientConnect(NetworkConnection conn)
+    void Update()
     {
-        base.OnClientConnect(conn);
-        this.connection = conn;
-        conn.RegisterHandler(MessageType.Hand, OnHandReceived);
-        conn.RegisterHandler(MessageType.Handshake, OnHandshakeReceived);
+        client.PollEvents();
     }
 
-    public void OnHandReceived(NetworkMessage netMsg)
+    public void JoinGame(NetEndPoint remoteEndPoint)
     {
-        var message = netMsg.ReadMessage<StringMessage>().value;
-        Debug.Log(message);
+        client.Connect(remoteEndPoint);
+    }
+
+    public void OnHandReceived(string message)
+    {
         var chips = message.Split('|').Select(c => new Chip(c)).ToList();
         gameUiBehaviour.OnHandReceived(chips);
-        Debug.Log(message);
-    }
-
-    public void OnHandshakeReceived(NetworkMessage netMsg)
-    {
-        var message = netMsg.ReadMessage<StringMessage>().value;
-        Debug.Log("Handshake :" + message);
-    }
-
-    public override void OnClientDisconnect(NetworkConnection conn)
-    {
-        base.OnClientDisconnect(conn);
-        StopClient();
-        gameBehaviour.GameLost();
-        discovery.Initialize();
-        discovery.StartAsClient();
     }
 
     public void SendCommands(Command[] commands)
     {
         var message = string.Join("|", commands.Select(c => c.ToString()).ToArray());
-        Debug.Log(message);
-        if (connection != null)
-            connection.Send(MessageType.Command, new StringMessage(message));
+        NetDataWriter writer = new NetDataWriter();
+        writer.Put(message);
+        client.SendToAll(writer, SendOptions.ReliableOrdered);
     }
 
     public void SendCommand(Command command)
     {
-        if (connection != null)
-            connection.Send(MessageType.Command, new StringMessage(command.ToString()));
+        NetDataWriter writer = new NetDataWriter();
+        writer.Put(command.ToString());
+        client.SendToAll(writer, SendOptions.ReliableOrdered);
     }
 }
