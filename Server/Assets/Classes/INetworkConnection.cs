@@ -28,6 +28,7 @@ public class SmartConnection : INetworkConnection
     {
         NetDataWriter writer = new NetDataWriter();
         writer.Put(message);
+        Debug.Log("Sending " + message);
         peer.Send(writer, SendOptions.ReliableOrdered);
     }
 

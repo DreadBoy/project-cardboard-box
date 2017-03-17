@@ -64,7 +64,6 @@ public class GameBehaviour : MonoBehaviour
         var index = players.IndexOf(e.player);
         string str = string.Join("|", e.chips.Select(c => c.ToString()).ToArray());
         connections[index].Send(MessageType.Hand, str);
-        Debug.Log("Sending chips: " + str);
     }
 
     private void CommandReceived_Event(object sender, CommandArgs e)

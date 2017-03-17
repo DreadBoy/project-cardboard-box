@@ -192,6 +192,8 @@ public class PlayerBehaviour : MonoBehaviour
 
         target = grid.SnapToGrid(target);
         distance = Vector3.Distance(target, transform.position);
+        if (distance == 0)
+            return false;
 
         //TODO Some static value?
         animator.SetBool("Moving", true);
