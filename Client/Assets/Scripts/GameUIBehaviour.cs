@@ -96,7 +96,7 @@ public class GameUIBehaviour : MonoBehaviour
     void UpdateSendButton()
     {
         List<Command> commands;
-        var valid = Command.TryParse(out commands, destinationChips.Select(c => c.chip).ToArray());
+        var valid = Command.TryParseHand(destinationChips.Select(c => c.chip).ToArray(), out commands);
         sendButton.Valid = valid;
     }
 
@@ -108,7 +108,7 @@ public class GameUIBehaviour : MonoBehaviour
     public void SendCommands()
     {
         List<Command> commands;
-        if (Command.TryParse(out commands, destinationChips.Select(c => c.chip).ToArray()))
+        if (Command.TryParseHand(destinationChips.Select(c => c.chip).ToArray(), out commands))
         {
             commands.Insert(0, new Command(ProjectCardboardBox.Action.REQUESTCHIPS, destinationChips.Count));
             networkBehaviour.SendCommands(commands.ToArray());

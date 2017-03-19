@@ -5,10 +5,10 @@ using System.Text;
 
 namespace ProjectCardboardBox
 {
-    public class MessageType
+    public enum MessageType
     {
-        public static byte Handshake = 48;
-        public static byte Hand = 49;
-        public static byte Command = 50;
+        Unknown = -1,
+        Command = 0,
+        Chip = 1,
     }
 }

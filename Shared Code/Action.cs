@@ -7,7 +7,11 @@ namespace ProjectCardboardBox
 {
     public enum Action
     {
-        REQUESTCHIPS = -2,
+        VICTORY = -6,
+        GAMEOVER = -5,
+        CONFIRMREADY = -4,
+        REQUESTCHIPS = -3,
+        NOTREADY = -2,
         READY = -1,
         MOVE = 0,
         TURN = 1

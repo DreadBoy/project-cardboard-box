@@ -115,6 +115,10 @@ public class PlayerBehaviour : MonoBehaviour
         {
             state = State.ready;
         }
+        else if (command.type == Action.NOTREADY && state == State.ready)
+        {
+            state = State.waiting;
+        }
         else if (command.type == Action.REQUESTCHIPS)
         {
             //NOTE You can generate chips based on current situation

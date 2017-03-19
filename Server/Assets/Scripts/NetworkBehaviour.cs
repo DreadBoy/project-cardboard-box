@@ -59,9 +59,20 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
 
     public void OnNetworkReceive(NetPeer peer, NetDataReader reader)
     {
-        var str = reader.GetString(1000);
-        Debug.Log("Got " + str);
-        conns.First(c => c.HasPeer(peer)).OnCommandReceived(str);
+        MessageType type;
+        if (MessageParser.TryParse(ref reader, out type))
+        {
+            if (type == MessageType.Chip)
+            {
+                Debug.LogError("Server can't receive chips!");
+            }
+            else if (type == MessageType.Command)
+            {
+                var message = reader.GetString(1000);
+                Debug.Log("Got " + message);
+                conns.First(c => c.HasPeer(peer)).OnMessageReceived(message);
+            }
+        }
     }
 
     public void OnNetworkReceiveUnconnected(NetEndPoint remoteEndPoint, NetDataReader reader, UnconnectedMessageType messageType)

@@ -7,12 +7,14 @@ public class LobbyUIBehaviour : MonoBehaviour {
 
     public Button joinButton;
     public Button readyButton;
+    public Button notreadyButton;
     public Text status;
 
     public void Searching()
     {
         status.text = "Searching for match...";
         joinButton.gameObject.SetActive(false);
+        notreadyButton.gameObject.SetActive(false);
         readyButton.gameObject.SetActive(false);
     }
 
@@ -22,10 +24,18 @@ public class LobbyUIBehaviour : MonoBehaviour {
         joinButton.gameObject.SetActive(true);
     }
 
-    public void Waiting()
+    public void Readying()
     {
         status.text = "Ready to go?";
         joinButton.gameObject.SetActive(false);
+        notreadyButton.gameObject.SetActive(false);
         readyButton.gameObject.SetActive(true);
+    }
+
+    public void Waiting()
+    {
+        status.text = "Waiting for other players";
+        notreadyButton.gameObject.SetActive(true);
+        readyButton.gameObject.SetActive(false);
     }
 }

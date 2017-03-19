@@ -2,6 +2,7 @@
 using ProjectCardboardBox;
 using System;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class GameBehaviour : MonoBehaviour
 {
@@ -16,11 +17,13 @@ public class GameBehaviour : MonoBehaviour
     public enum State
     {
         lobby,
-        game
+        game,
+        victory,
+        gameover
     }
     public State state = State.lobby;
 
-    void Start()
+    void OnEnable()
     {
         networkBehaviour = FindObjectOfType<NetworkBehaviour>();
         uiBehaviour = FindObjectOfType<UIBehaviour>();
@@ -34,6 +37,9 @@ public class GameBehaviour : MonoBehaviour
 
     public void GameFound(NetEndPoint remoteEndPoint)
     {
+        if (this.remoteEndPoint != null)
+            if (this.remoteEndPoint.Host == remoteEndPoint.Host)
+                return;
         lobbyUiBehaviour.Found();
         this.remoteEndPoint = remoteEndPoint;
     }
@@ -47,13 +53,38 @@ public class GameBehaviour : MonoBehaviour
     public void JoinGame()
     {
         networkBehaviour.JoinGame(remoteEndPoint);
-        lobbyUiBehaviour.Waiting();
+        lobbyUiBehaviour.Readying();
     }
 
     public void ReadyToPlay()
     {
         networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.READY));
-        state = State.game;
-        uiBehaviour.ChangeState(state);
+        lobbyUiBehaviour.Waiting();
+    }
+
+    public void NotReadyToPlay()
+    {
+        networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.NOTREADY));
+        lobbyUiBehaviour.Readying();
+    }
+
+    internal void OnCommandReceived(List<Command> commands)
+    {
+        foreach (var command in commands)
+        {
+            if (command.type == ProjectCardboardBox.Action.CONFIRMREADY)
+            {
+                state = State.game;
+                uiBehaviour.ChangeState(state);
+            }
+            if(command.type == ProjectCardboardBox.Action.GAMEOVER || command.type == ProjectCardboardBox.Action.VICTORY)
+            {
+                if (command.type == ProjectCardboardBox.Action.GAMEOVER)
+                    state = State.gameover;
+                if (command.type == ProjectCardboardBox.Action.VICTORY)
+                    state = State.victory;
+                uiBehaviour.ChangeState(state);
+            }
+        }
     }
 }

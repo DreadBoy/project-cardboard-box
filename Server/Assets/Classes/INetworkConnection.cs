@@ -9,7 +9,7 @@ public interface INetworkConnection
 {
     SmartEvent<CommandArgs> CommandReceived { get; set; }
     PlayerBehaviour player { get; set; }
-    void Send(short msgType, string message);
+    void Send(MessageType type, string message);
 }
 
 public class SmartConnection : INetworkConnection
@@ -24,9 +24,10 @@ public class SmartConnection : INetworkConnection
         this.peer = peer;
     }
 
-    public void Send(short msgType, string message)
+    public void Send(MessageType type, string message)
     {
         NetDataWriter writer = new NetDataWriter();
+        writer.Put((int)type);
         writer.Put(message);
         Debug.Log("Sending " + message);
         peer.Send(writer, SendOptions.ReliableOrdered);
@@ -37,10 +38,10 @@ public class SmartConnection : INetworkConnection
         return peer == this.peer;
     }
 
-    public void OnCommandReceived(string message)
+    public void OnMessageReceived(string message)
     {
-        var comms = message.Split('|');
-        var commands = comms.Select(p => new Command(p)).ToArray();
+        var messages = message.Split('|');
+        var commands = messages.Select(p => new Command(p)).ToArray();
         foreach (var command in commands)
         {
             CommandReceived.RaiseEvent(new CommandArgs(command, player));
@@ -58,8 +59,8 @@ public class MockConnection : INetworkConnection
         CommandReceived = new SmartEvent<CommandArgs>();
     }
 
-    public void Send(short msgType, string message)
+    public void Send(MessageType type, string message)
     {
-        Debug.Log("(Mock connection) Sending network message " + msgType + ": " + message.ToString());
+        Debug.Log("(Mock connection) Sending network message " + type.ToString() + ": " + message.ToString());
     }
 }

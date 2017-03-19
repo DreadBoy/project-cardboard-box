@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LiteNetLib">
+      <HintPath>LiteNetLib\LiteNetLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,6 +46,7 @@
     <Compile Include="Command.cs" />
     <Compile Include="Chip.cs" />
     <Compile Include="LerpHelper.cs" />
+    <Compile Include="MessageParser.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="SmartEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

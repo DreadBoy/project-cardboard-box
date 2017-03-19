@@ -10,7 +10,6 @@ public class GameBehaviour : MonoBehaviour
     public int gridSize;
     public PlayerBehaviour playerPrefab;
 
-    //DI LobbyBehaviour
     LobbyBehaviour lobby;
     GridBehaviour grid;
 
@@ -63,7 +62,7 @@ public class GameBehaviour : MonoBehaviour
     {
         var index = players.IndexOf(e.player);
         string str = string.Join("|", e.chips.Select(c => c.ToString()).ToArray());
-        connections[index].Send(MessageType.Hand, str);
+        connections[index].Send(MessageType.Chip, str);
     }
 
     private void CommandReceived_Event(object sender, CommandArgs e)
@@ -113,5 +112,10 @@ public class GameBehaviour : MonoBehaviour
         });
         state = State.game;
         changeStateEvent.RaiseEvent(new changeStateArgs(state));
+        foreach(var conn in connections)
+        {
+            conn.Send(MessageType.Command, new Command(Action.CONFIRMREADY).ToString());
+        }
+        
     }
 }

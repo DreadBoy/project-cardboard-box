@@ -33,7 +33,7 @@ namespace ProjectCardboardBox
             return $"{type.ToString()}:{number}";
         }
 
-        public static bool TryParse(out List<Command> commands, Chip[] hand)
+        public static bool TryParseHand(Chip[] hand, out List<Command> commands)
         {
             commands = new List<Command>();
             List<Chip> buffer = new List<Chip>();
