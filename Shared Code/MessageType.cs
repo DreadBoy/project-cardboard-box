@@ -10,5 +10,6 @@ namespace ProjectCardboardBox
         Unknown = -1,
         Command = 0,
         Chip = 1,
+        Hint = 2,
     }
 }

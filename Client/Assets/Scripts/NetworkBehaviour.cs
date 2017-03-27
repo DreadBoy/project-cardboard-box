@@ -75,6 +75,20 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
         Debug.Log("Sending command " + command.ToString());
     }
 
+    public void SendHint(Command[] commands)
+    {
+        if (client == null)
+            return;
+        NetDataWriter writer = new NetDataWriter();
+        writer.Put((int)MessageType.Hint);
+        var str = string.Join("|", commands.Select(c => c.ToString()).ToArray());
+        writer.Put(str);
+        client.SendToAll(writer, SendOptions.ReliableOrdered);
+        Debug.Log("Sending hint " + str);
+
+        throw new NotImplementedException();
+    }
+
     public void OnPeerConnected(NetPeer peer)
     {
         //Debug.Log("[CLIENT] We connected to " + peer.EndPoint);
@@ -83,6 +97,7 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
     public void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
     {
         gameBehaviour.GameLost();
+        connected = false;
     }
 
     public void OnNetworkError(NetEndPoint endPoint, int socketErrorCode)

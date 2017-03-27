@@ -89,7 +89,7 @@ public class GridBehaviour : MonoBehaviour
         playerSpawner.SpawnPlayerOnGrid(player);
     }
 
-    public void RemovePlayerToGrid(PlayerBehaviour player)
+    public void RemovePlayerFromGrid(PlayerBehaviour player)
     {
         players.Remove(player);
     }
@@ -146,8 +146,8 @@ public class GridBehaviour : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns vector that is centered on nearest cell
-    /// Always returns position inside grid
+    /// Returns vector that is centered on nearest cell. 
+    /// Always returns position inside grid.
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>

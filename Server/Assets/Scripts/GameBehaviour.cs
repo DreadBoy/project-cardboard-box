@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking.NetworkSystem;
+using System;
 
 public class GameBehaviour : MonoBehaviour
 {
@@ -53,6 +54,7 @@ public class GameBehaviour : MonoBehaviour
 
         //subscribe to player's connection
         connection.CommandReceived.Event += CommandReceived_Event;
+        connection.HintReceived.Event += HintReceived_Event;
         player.chipsEvent.Event += ChipsEvent;
 
         return player;
@@ -68,6 +70,11 @@ public class GameBehaviour : MonoBehaviour
     private void CommandReceived_Event(object sender, CommandArgs e)
     {
         e.player.ReceiveCommand(e.command);
+    }
+
+    private void HintReceived_Event(object sender, HintArgs e)
+    {
+        e.player.ReceiveHint(e.hint);
     }
 
     public void PlayerDisconnect(INetworkConnection connection)
@@ -100,22 +107,43 @@ public class GameBehaviour : MonoBehaviour
         {
             ChangeToState_Game();
         }
+        if (state == State.game && players.Count > 1 && players.Count(pl => pl.state != PlayerBehaviour.State.dead) == 1)
+        {
+            ChangeToState_Ending();
+        }
+    }
+
+    public void ChangeToState_Ending()
+    {
+        connections.First(c => c.player.state != PlayerBehaviour.State.dead).Send(MessageType.Command, new Command(ProjectCardboardBox.Action.VICTORY).ToString());
+        foreach (var player in players)
+        {
+            player.state = PlayerBehaviour.State.ending;
+            grid.RemovePlayerFromGrid(player);
+        }
+        state = State.ending;
+        changeStateEvent.RaiseEvent(new changeStateArgs(state));
     }
 
     public void ChangeToState_Game()
     {
-        players.ForEach(delegate (PlayerBehaviour player)
+        foreach (var player in players)
         {
             player.state = PlayerBehaviour.State.ingame;
             lobby.RemovePlayerFromLobby(player);
             grid.AddPlayerToGrid(player);
-        });
+        }
         state = State.game;
         changeStateEvent.RaiseEvent(new changeStateArgs(state));
-        foreach(var conn in connections)
+        foreach (var conn in connections)
         {
-            conn.Send(MessageType.Command, new Command(Action.CONFIRMREADY).ToString());
+            conn.Send(MessageType.Command, new Command(ProjectCardboardBox.Action.CONFIRMREADY).ToString());
         }
-        
+
+    }
+
+    internal void playerDied(PlayerBehaviour player)
+    {
+        connections.First(c => c.player == player).Send(MessageType.Command, new Command(ProjectCardboardBox.Action.GAMEOVER).ToString());
     }
 }

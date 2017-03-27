@@ -24,6 +24,7 @@ public class Testing : MonoBehaviour
         game.state = GameBehaviour.State.game;
         uiBehaviour.ChangeState(game.state);
         game.OnCommandReceived(new List<Command>() { new Command(Action.GAMEOVER) });
+
         //gameUiBehaviour.OnHandReceived(new List<Chip>() {
         //    new Chip("Action:MOVE"),
         //    new Chip("Number:5"),

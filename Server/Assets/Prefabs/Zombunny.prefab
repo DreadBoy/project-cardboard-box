@@ -40,6 +40,7 @@ GameObject:
   - component: {fileID: 114506567867129240}
   - component: {fileID: 65624215822867348}
   - component: {fileID: 54433630919358972}
+  - component: {fileID: 114853029688422048}
   m_Layer: 0
   m_Name: Zombunny
   m_TagString: Untagged
@@ -145,6 +146,19 @@ MonoBehaviour:
   state: 0
   animator: {fileID: 0}
   velocity: {x: 0, y: 0, z: 0}
+--- !u!114 &114853029688422048
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1744344280202138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e57288496e71424419b77be70d26afb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hintArrow: {fileID: 1633505786073846, guid: 55fc660fd85e3ac4b837ef2969ac409a, type: 2}
+  hintPath: {fileID: 1825782381152348, guid: e0f7e11bf6891304e9aae8284ad0becb, type: 2}
 --- !u!137 &137612861821735618
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

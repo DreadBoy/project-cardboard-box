@@ -55,6 +55,18 @@ public class GameUIBehaviour : MonoBehaviour
         }
         UpdateChips();
         UpdateSendButton();
+        SendHint();
+    }
+
+    private void SendHint()
+    {
+        if (destinationChips.Count == 0) {
+            networkBehaviour.SendHint(new Command[0]);
+            return;
+        }
+        List<Command> commands;
+        if (Command.TryParseHand(destinationChips.Select(c => c.chip).ToArray(), out commands))
+            networkBehaviour.SendHint(commands.ToArray());
     }
 
     internal void ClearAll()

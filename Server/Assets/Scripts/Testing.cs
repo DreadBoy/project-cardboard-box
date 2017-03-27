@@ -16,25 +16,21 @@ class Testing : MonoBehaviour
     List<Vector2> spawnPoints = new List<Vector2>()
     {
         //new Vector2(5, 2),
-        new Vector2(0, 0)
+        new Vector2(6, 6)
     };
 
     void Start()
     {
-        //game = FindObjectOfType<GameBehaviour>();
-        //grid = FindObjectOfType<GridBehaviour>();
+        game = FindObjectOfType<GameBehaviour>();
+        grid = FindObjectOfType<GridBehaviour>();
 
-        //grid.GetComponent<PlayerSpawner>().enabled = false;
-        //grid.GetComponent<PlayerSpawnerMock>().enabled = true;
+        grid.GetComponent<PlayerSpawner>().enabled = false;
+        grid.GetComponent<PlayerSpawnerMock>().enabled = true;
 
-        //grid.GetComponent<PlayerSpawnerMock>().spawnPoints = new List<Vector2>(spawnPoints);
+        grid.GetComponent<PlayerSpawnerMock>().spawnPoints = new List<Vector2>(spawnPoints);
 
-        //game.PlayerConnect(conn1);
+        game.PlayerConnect(conn1);
         //game.PlayerConnect(conn2);
-
-        //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.player));
-
-        //conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn2.player));
 
         //EventBasedNetListener listener = new EventBasedNetListener();
         //client = new NetManager(listener, "SomeConnectionKey");
@@ -63,25 +59,27 @@ class Testing : MonoBehaviour
     {
         time += Time.deltaTime;
         //client.PollEvents();
-        if (time > 1 && !triggered2)
+        if (time > 0.4 && !triggered2)
         {
             triggered2 = true;
 
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.player));
             //NetDataWriter writer = new NetDataWriter();
             //writer.Put("CLIENT 1 DISCOVERY REQUEST");
             //client.SendDiscoveryRequest(writer, 9050);
         }
-        if (time > 5f && !triggered1)
+        if (time > 1f && !triggered1)
         {
             triggered1 = true;
 
 
 
-            //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.player));
             //var free = grid.IsSpotFree((int)spawnPoints[0].x, (int)spawnPoints[0].y);
 
             //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn1.player));
             //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn1.player));
+
+            conn1.HintReceived.RaiseEvent(new HintArgs("TURN:1|TURN:1", conn1.player));
 
             //conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn2.player));
             //conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn2.player));

@@ -54,7 +54,7 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
 
     public void OnNetworkError(NetEndPoint endPoint, int socketErrorCode)
     {
-        Debug.Log("Got error" + socketErrorCode);
+        Debug.Log("Got error " + socketErrorCode);
     }
 
     public void OnNetworkReceive(NetPeer peer, NetDataReader reader)
@@ -69,8 +69,14 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
             else if (type == MessageType.Command)
             {
                 var message = reader.GetString(1000);
-                Debug.Log("Got " + message);
+                Debug.Log("Got commands " + message);
                 conns.First(c => c.HasPeer(peer)).OnMessageReceived(message);
+            }
+            else if (type == MessageType.Hint)
+            {
+                var message = reader.GetString(1000);
+                Debug.Log("Got hint " + message);
+                conns.First(c => c.HasPeer(peer)).OnHintReceived(message);
             }
         }
     }

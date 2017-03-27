@@ -8,6 +8,7 @@ public class PlayerBehaviour : MonoBehaviour
 {
     public GameBehaviour game;
     public GridBehaviour grid;
+    HintBehaviour hintBehaviour;
 
     float speed = 3.5f;
     float rotationspeed = 1.5f;
@@ -28,7 +29,9 @@ public class PlayerBehaviour : MonoBehaviour
     {
         waiting,
         ready,
-        ingame
+        ingame,
+        dead,
+        ending
     }
     public State state = State.waiting;
 
@@ -46,6 +49,7 @@ public class PlayerBehaviour : MonoBehaviour
     {
         grid = FindObjectOfType<GridBehaviour>();
         game = FindObjectOfType<GameBehaviour>();
+        hintBehaviour = GetComponent<HintBehaviour>();
         if (animator == null)
         {
             animator = GetComponent<Animator>();
@@ -124,6 +128,16 @@ public class PlayerBehaviour : MonoBehaviour
             //NOTE You can generate chips based on current situation
             chipsEvent.RaiseEvent(new ChipsArgs(GenerateChips(command.number), this));
         }
+    }
+
+    public void ReceiveHint(string hint)
+    {
+        Debug.Log("Received hint " + hint);
+        hintBehaviour.HideHint();
+        if (hint.Length == 0)
+            return;
+        var hints = hint.Split('|').Select(s => new Command(s)).ToArray();
+        hintBehaviour.DisplayHint(transform.position, angle, grid, hints);
     }
 
     public void CancelAndClearCommands()
@@ -294,5 +308,7 @@ public class PlayerBehaviour : MonoBehaviour
     void Die()
     {
         animator.SetTrigger("Dead");
+        state = State.dead;
+        game.playerDied(this);
     }
 }

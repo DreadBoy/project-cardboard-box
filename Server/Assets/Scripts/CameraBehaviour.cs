@@ -31,6 +31,8 @@ public class CameraBehaviour : MonoBehaviour
             index = 0;
         if (e.state == GameBehaviour.State.game)
             index = 1;
+        if (e.state == GameBehaviour.State.ending)
+            index = 0;
 
         if (index > -1)
         {

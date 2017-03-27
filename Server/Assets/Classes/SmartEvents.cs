@@ -35,6 +35,18 @@ public class CommandArgs : EventArgs
     }
 }
 
+public class HintArgs : EventArgs
+{
+    public string hint;
+    public PlayerBehaviour player;
+
+    public HintArgs(string hint, PlayerBehaviour player)
+    {
+        this.hint = hint;
+        this.player = player;
+    }
+}
+
 public class changeStateArgs : EventArgs
 {
     public GameBehaviour.State state;

@@ -40,6 +40,7 @@ GameObject:
   - component: {fileID: 114991925980907306}
   - component: {fileID: 65110862858519648}
   - component: {fileID: 54772912360079294}
+  - component: {fileID: 114704524420804116}
   m_Layer: 0
   m_Name: ZomBear
   m_TagString: Untagged
@@ -118,6 +119,19 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 0
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114704524420804116
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1648411049611788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e57288496e71424419b77be70d26afb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hintArrow: {fileID: 1633505786073846, guid: 55fc660fd85e3ac4b837ef2969ac409a, type: 2}
+  hintPath: {fileID: 1825782381152348, guid: e0f7e11bf6891304e9aae8284ad0becb, type: 2}
 --- !u!114 &114860827733322440
 MonoBehaviour:
   m_ObjectHideFlags: 1
