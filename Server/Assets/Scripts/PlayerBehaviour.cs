@@ -45,6 +45,8 @@ public class PlayerBehaviour : MonoBehaviour
     public Animator animator;
     public Vector3 velocity = Vector3.zero;
 
+    Material colour;
+
     void Awake()
     {
         grid = FindObjectOfType<GridBehaviour>();
@@ -54,6 +56,11 @@ public class PlayerBehaviour : MonoBehaviour
         {
             animator = GetComponent<Animator>();
         }
+    }
+
+    void OnEnable()
+    {
+        colour = ColouredMaterial.Instance.GetNewColour();
     }
 
     void Start()
@@ -137,7 +144,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (hint.Length == 0)
             return;
         var hints = hint.Split('|').Select(s => new Command(s)).ToArray();
-        hintBehaviour.DisplayHint(transform.position, angle, grid, hints);
+        hintBehaviour.DisplayHint(transform.position, angle, grid, hints, colour);
     }
 
     public void CancelAndClearCommands()
@@ -195,6 +202,7 @@ public class PlayerBehaviour : MonoBehaviour
     public void DestroyPlayer()
     {
         Destroy(gameObject);
+        hintBehaviour.HideHint();
     }
 
     public bool MovePlayer(int number)

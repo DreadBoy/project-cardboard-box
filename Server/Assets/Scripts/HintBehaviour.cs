@@ -1,7 +1,7 @@
 ﻿using ProjectCardboardBox;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class HintBehaviour : MonoBehaviour
 {
@@ -12,7 +12,7 @@ public class HintBehaviour : MonoBehaviour
     Vector3[] directions = new Vector3[] { Vector3.forward, Vector3.right, Vector3.back, Vector3.left };
 
 
-    public void DisplayHint(Vector3 position, float angle, GridBehaviour grid, Command[] hints)
+    public void DisplayHint(Vector3 position, float angle, GridBehaviour grid, Command[] hints, Material material)
     {
         for (int h = 0; h < hints.Length; h++)
         {
@@ -26,6 +26,8 @@ public class HintBehaviour : MonoBehaviour
                         continue;
 
                 var obj = Instantiate(hintArrow);
+                foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
+                    renderer.material = material;
                 obj.transform.position = position;
                 obj.transform.rotation = Quaternion.Euler(0, angle, 0);
                 hintObjects.Add(obj);
@@ -40,6 +42,8 @@ public class HintBehaviour : MonoBehaviour
                     pos = new Vector3(position.x + direction.x * grid.offset.x * i, 0, position.z + direction.z * grid.offset.z * i);
                     pos = grid.SnapToGrid(pos);
                     var obj = Instantiate(hintPath);
+                    foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
+                        renderer.material = material;
                     obj.transform.position = pos;
                     hintObjects.Add(obj);
                 }

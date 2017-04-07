@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Action.cs" />
+    <Compile Include="Colours.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Chip.cs" />
     <Compile Include="LerpHelper.cs" />

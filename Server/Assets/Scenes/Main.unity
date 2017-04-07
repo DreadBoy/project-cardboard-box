@@ -138,6 +138,56 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 400000, guid: bd3a7a773fe02354da0a4d8dbabd8cbb, type: 3}
   m_PrefabInternal: {fileID: 23438599}
+--- !u!1 &27995280
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 27995282}
+  - component: {fileID: 27995281}
+  m_Layer: 0
+  m_Name: ColouredMaterial
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &27995281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 27995280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af5aa5738352ed7428e274e553e6bd65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Black: {fileID: 2100000, guid: 59bb00e1355fb0d4cbd739339da9ff08, type: 2}
+  Cyan: {fileID: 2100000, guid: 551abead163a71149b505d7afd01603e, type: 2}
+  Pink: {fileID: 2100000, guid: 82b9433d86331e34aa3107992644e6ef, type: 2}
+  Violet: {fileID: 2100000, guid: 4868539832c03e047a6e2233d3f5a326, type: 2}
+  Blue: {fileID: 2100000, guid: 7b4eb1b6290196b4d8aefc6dd1664338, type: 2}
+  Red: {fileID: 2100000, guid: 0ee8d9423fb0558498db7bed7fdfbe2d, type: 2}
+  Brown: {fileID: 2100000, guid: 538b4dc3a46dd7f49af1e1dd260324c1, type: 2}
+  Orange: {fileID: 2100000, guid: d16a139624379de45b645e34ebd9ca9d, type: 2}
+  Green: {fileID: 2100000, guid: c793e8a6b6d845e458851cebbdc2b40e, type: 2}
+  Yellow: {fileID: 2100000, guid: 1e7c9fc7708db6340a5734d6bbd2e0c1, type: 2}
+--- !u!4 &27995282
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 27995280}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.8904896, y: -1.0622206, z: 0.20852566}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &35958550
 GameObject:
   m_ObjectHideFlags: 0
