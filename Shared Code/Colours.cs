@@ -19,6 +19,6 @@ namespace ProjectCardboardBox
         public const string Green = "24ff24"; //14
         public const string Yellow = "ffff6d"; //15
 
-        public static readonly string[] AllColours = new string[] { Black, Cyan, Pink, Violet, Black, Red, Brown, Orange, Green, Yellow };
+        public static readonly string[] AllColours = new string[] { Black, Cyan, Pink, Violet, Blue, Red, Brown, Orange, Green, Yellow };
     }
 }

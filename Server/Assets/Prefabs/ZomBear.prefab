@@ -213,6 +213,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hintArrow: {fileID: 1633505786073846, guid: 55fc660fd85e3ac4b837ef2969ac409a, type: 2}
   hintPath: {fileID: 1825782381152348, guid: e0f7e11bf6891304e9aae8284ad0becb, type: 2}
+  hintCircle: {fileID: 1539559870225534, guid: 3358a48fde7d9a4418c0ee550830065a, type: 2}
 --- !u!114 &114860827733322440
 MonoBehaviour:
   m_ObjectHideFlags: 1

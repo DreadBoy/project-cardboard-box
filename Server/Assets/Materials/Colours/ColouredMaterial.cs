@@ -11,31 +11,18 @@ public class ColouredMaterial : Singleton<ColouredMaterial>
 
     void OnEnable()
     {
-        materials.Add(Colours.Black, Black);
-        materials.Add(Colours.Cyan, Cyan);
-        materials.Add(Colours.Pink, Pink);
-        materials.Add(Colours.Violet, Violet);
-        materials.Add(Colours.Blue, Blue);
-        materials.Add(Colours.Red, Red);
-        materials.Add(Colours.Brown, Brown);
-        materials.Add(Colours.Orange, Orange);
-        materials.Add(Colours.Green, Green);
-        materials.Add(Colours.Yellow, Yellow);
+        foreach (var colour in Colours.AllColours)
+        {
+            var mat = new Material(BaseMaterial);
+            mat.color = HexToColor(colour);
+            materials.Add(colour, mat);
+        }
 
-        availableColours = materials.Keys.ToList();
+        availableColours = Colours.AllColours.ToList();
         random = new System.Random();
     }
 
-    public Material Black;
-    public Material Cyan;
-    public Material Pink;
-    public Material Violet;
-    public Material Blue;
-    public Material Red;
-    public Material Brown;
-    public Material Orange;
-    public Material Green;
-    public Material Yellow;
+    public Material BaseMaterial;
 
     Dictionary<string, Material> materials = new Dictionary<string, Material>();
     List<string> availableColours = new List<string>();
@@ -49,5 +36,13 @@ public class ColouredMaterial : Singleton<ColouredMaterial>
         var ret = materials[availableColours[index]];
         availableColours.RemoveAt(index);
         return ret;
+    }
+
+    private static Color HexToColor(string colour)
+    {
+        return new Color(
+            int.Parse(colour.Substring(0, 2), System.Globalization.NumberStyles.HexNumber),
+            int.Parse(colour.Substring(2, 2), System.Globalization.NumberStyles.HexNumber),
+            int.Parse(colour.Substring(4, 2), System.Globalization.NumberStyles.HexNumber));
     }
 }

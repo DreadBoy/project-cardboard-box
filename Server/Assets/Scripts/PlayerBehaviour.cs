@@ -140,10 +140,7 @@ public class PlayerBehaviour : MonoBehaviour
     public void ReceiveHint(string hint)
     {
         Debug.Log("Received hint " + hint);
-        hintBehaviour.HideHint();
-        if (hint.Length == 0)
-            return;
-        var hints = hint.Split('|').Select(s => new Command(s)).ToArray();
+        var hints = hint.Split(new[] { '|' }, System.StringSplitOptions.RemoveEmptyEntries).Select(s => new Command(s)).ToArray();
         hintBehaviour.DisplayHint(transform.position, angle, grid, hints, colour);
     }
 
@@ -202,7 +199,7 @@ public class PlayerBehaviour : MonoBehaviour
     public void DestroyPlayer()
     {
         Destroy(gameObject);
-        hintBehaviour.HideHint();
+        hintBehaviour.DestroyHint();
     }
 
     public bool MovePlayer(int number)
