@@ -9,6 +9,7 @@ public class Testing : MonoBehaviour
     public UIBehaviour uiBehaviour;
     public GameUIBehaviour gameUiBehaviour;
     public NetworkBehaviour networkBehaviour;
+    public InitNickname initNickname;
 
     void Start()
     {
@@ -20,10 +21,14 @@ public class Testing : MonoBehaviour
             networkBehaviour = FindObjectOfType<NetworkBehaviour>();
         if (gameUiBehaviour == null)
             gameUiBehaviour = FindObjectOfType<GameUIBehaviour>();
+        if (initNickname == null)
+            initNickname = FindObjectOfType<InitNickname>();
 
-        game.state = GameBehaviour.State.game;
-        uiBehaviour.ChangeState(game.state);
-        game.OnCommandReceived(new List<Command>() { new Command(Action.GAMEOVER) });
+        //game.state = GameBehaviour.State.game;
+        //uiBehaviour.ChangeState(game.state);
+        //game.OnCommandReceived(new List<Command>() { new Command(Action.GAMEOVER) });
+
+        //networkBehaviour.SendCommands(new Command[] { new Command("MOVE:2"), new Command("TURN:2") });
 
         //gameUiBehaviour.OnHandReceived(new List<Chip>() {
         //    new Chip("Action:MOVE"),
@@ -36,15 +41,17 @@ public class Testing : MonoBehaviour
         //    new Chip("Number:9")
         //});
 
-    }
+        //initNickname.ExitToLeft();
+        
 
+    }
+    bool done1 = false;
     void Update()
     {
-
-    }
-
-    public void SendTestCommands()
-    {
-        networkBehaviour.SendCommands(new Command[] { new Command("MOVE:2"), new Command("TURN:2") });
+        if(Time.time > 3 && !done1)
+        {
+            //initNickname.EnterFromRight();
+            done1 = true;
+        }
     }
 }

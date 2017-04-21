@@ -14,7 +14,7 @@
 
 
 ##Screens for name and colour
-When user joins for first time, ask him about nickname. Simple text "What's your nickname?" with input below. Below input is disabled button "Confirm" and further down is "Skip" button. When entered or skipped, screen swipes left and from right next screen with colour selection. "What's your colour?" with 10 swatches and same "Confirm" and "Skip" buttons. 
+When user joins for first time, ask him about nickname. Simple text "What's your nickname?" with input below. Under input is disabled button "Confirm" and further down is "Skip" button. When entered or skipped, screen swipes left and from right next screen with colour selection. "What's your colour?" with 10 swatches and same "Confirm" and "Skip" buttons. 
 
 When player joins a server, he sees "Ready?" button and "Change nickname" button on left and "change colour" button on right. If going left, buttons now says "Change Colour" and "Back to game". Similar for right screen but buttons are switched. Player is always on click away from game screen and other screen.
 
