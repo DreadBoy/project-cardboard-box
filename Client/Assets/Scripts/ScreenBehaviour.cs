@@ -23,7 +23,6 @@ public class ScreenBehaviour : MonoBehaviour
 
     public virtual void Start()
     {
-
     }
 
     public virtual void Update()
@@ -35,6 +34,16 @@ public class ScreenBehaviour : MonoBehaviour
             if (moving.IsDone())
                 moving = null;
         }
+    }
+
+    public virtual void OnEnter(ScreenBehaviour from)
+    {
+
+    }
+
+    public virtual void OnLeave(ScreenBehaviour to)
+    {
+
     }
 
     public void ExitToLeft()
@@ -62,6 +71,7 @@ public class ScreenBehaviour : MonoBehaviour
         var to = new Vector2(0, 0);
         moving = new LerpHelper<Vector2>(from, to, Vector2.Lerp, speed, Vector2.Distance(from, to));
         screenPosition = ScreenPosition.Center;
+        OnEnter(transitionedFrom);
     }
 
     public void EnterFromRight()
@@ -73,6 +83,22 @@ public class ScreenBehaviour : MonoBehaviour
         var to = new Vector2(0, 0);
         moving = new LerpHelper<Vector2>(from, to, Vector2.Lerp, speed, Vector2.Distance(from, to));
         screenPosition = ScreenPosition.Center;
+        OnEnter(transitionedFrom);
+    }
+
+    public void Hide()
+    {
+        GetComponent<RectTransform>().anchoredPosition = positionLeft;
+        if (moving != null)
+            moving = null;
+    }
+
+    public void Show()
+    {
+        GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+        if (moving != null)
+            moving = null;
+        OnEnter(transitionedFrom);
     }
 
     public void GoForward()
@@ -91,8 +117,17 @@ public class ScreenBehaviour : MonoBehaviour
     public void GoForward(ScreenBehaviour nextScreen)
     {
         ExitToLeft();
-        nextScreen.EnterFromRight();
         nextScreen.transitionedFrom = this;
+        nextScreen.EnterFromRight();
+        OnLeave(nextScreen);
+    }
+
+    public void GoForwardImmediately(ScreenBehaviour nextScreen)
+    {
+        Hide();
+        nextScreen.transitionedFrom = this;
+        nextScreen.Show();
+        OnLeave(nextScreen);
     }
 
     protected enum ScreenPosition

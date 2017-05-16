@@ -35,6 +35,14 @@ public class InitColour : ScreenBehaviour
         confirm.interactable = !string.IsNullOrEmpty(colourSelected);
     }
 
+    public override void OnEnter(ScreenBehaviour from)
+    {
+        base.OnEnter(from);
+
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPreferences.Colour)))
+            GoForwardImmediately(transitionTo[0]);
+    }
+
     GameObject CreateSwatch(Transform parent, string colour, int index)
     {
         var swatch = new GameObject();
@@ -73,6 +81,7 @@ public class InitColour : ScreenBehaviour
             swatch.GetComponent<Image>().sprite = spriteSwatch;
         selectedSwatch.GetComponent<Image>().sprite = spriteSwatchSelected;
         colourSelected = colour;
+        PlayerPrefs.SetString(PlayerPreferences.Colour, colour);
     }
 
     class SwatchClicked

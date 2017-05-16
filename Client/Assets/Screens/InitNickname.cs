@@ -16,12 +16,17 @@ public class InitNickname : ScreenBehaviour
     public override void Start()
     {
         base.Start();
-        rect.anchoredPosition = Vector2.zero;
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPreferences.Nickname)))
+            GoForwardImmediately(transitionTo[0]);
+        else
+            rect.anchoredPosition = Vector2.zero;
     }
 
     public override void Update()
     {
         base.Update();
         confirm.interactable = !string.IsNullOrEmpty(input.text);
+        if (!string.IsNullOrEmpty(input.text))
+            PlayerPrefs.SetString(PlayerPreferences.Nickname, input.text);
     }
 }
