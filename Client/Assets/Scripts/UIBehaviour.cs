@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class UIBehaviour : MonoBehaviour
 {
 
-    public LobbyUIBehaviour lobbyState;
     public GameUIBehaviour gameState;
     public GameOverUIBehaviour gameOverState;
     public NetworkBehaviour networkBehaviour;
@@ -16,8 +15,6 @@ public class UIBehaviour : MonoBehaviour
 
     void OnEnable()
     {
-        if (lobbyState == null)
-            lobbyState = FindObjectOfType<LobbyUIBehaviour>();
         if (gameState == null)
             gameState = FindObjectOfType<GameUIBehaviour>();
         if (gameOverState == null)
@@ -25,11 +22,10 @@ public class UIBehaviour : MonoBehaviour
         if (networkBehaviour == null)
             networkBehaviour = FindObjectOfType<NetworkBehaviour>();
 
-        allStates = new MonoBehaviour[] { lobbyState, gameState, gameOverState };
+        allStates = new MonoBehaviour[] { gameState, gameOverState };
 
         foreach (var state in allStates)
             state.gameObject.SetActive(false);
-        lobbyState.gameObject.SetActive(true);
     }
 
     void Update()
@@ -53,8 +49,6 @@ public class UIBehaviour : MonoBehaviour
         }
         if (state == GameBehaviour.State.lobby)
         {
-            lobbyState.gameObject.SetActive(true);
-            lobbyState.Searching();
             gameState.ClearAll();
         }
         if (state == GameBehaviour.State.gameover || state == GameBehaviour.State.victory)

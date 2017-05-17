@@ -89,6 +89,7 @@ public class ScreenBehaviour : MonoBehaviour
     public void Hide()
     {
         GetComponent<RectTransform>().anchoredPosition = positionLeft;
+        screenPosition = ScreenPosition.Left;
         if (moving != null)
             moving = null;
     }
@@ -96,6 +97,7 @@ public class ScreenBehaviour : MonoBehaviour
     public void Show()
     {
         GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+        screenPosition = ScreenPosition.Center;
         if (moving != null)
             moving = null;
         OnEnter(transitionedFrom);
@@ -110,7 +112,7 @@ public class ScreenBehaviour : MonoBehaviour
 
     public void GoForward(int index)
     {
-        if (index > 0 && index < transitionTo.Count)
+        if (index >= 0 && index < transitionTo.Count)
             GoForward(transitionTo[index]);
     }
 

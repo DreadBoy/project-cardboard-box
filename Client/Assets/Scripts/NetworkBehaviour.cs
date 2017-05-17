@@ -10,14 +10,15 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
     NetManager client;
     private bool connected;
 
-    public GameBehaviour gameBehaviour { get; set; }
-    public GameUIBehaviour gameUiBehaviour;
+    GameLobby lobby;
 
     void Start()
     {
-        gameBehaviour = FindObjectOfType<GameBehaviour>();
-        if (gameUiBehaviour == null)
-            gameUiBehaviour = FindObjectOfType<GameUIBehaviour>();
+    }
+
+    public void StartSearching(GameLobby lobby)
+    {
+        this.lobby = lobby;
 
         client = new NetManager(this, "SomeConnectionKey");
         client.Start();
@@ -26,6 +27,8 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
 
     void Update()
     {
+        if (client == null)
+            return;
         client.PollEvents();
         if (!connected)
         {
@@ -36,16 +39,16 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
         }
     }
 
-    void OnDestroy()
-    {
-        if (client != null)
-            client.Stop();
-    }
-
     public void JoinGame(NetEndPoint remoteEndPoint)
     {
         connected = true;
         client.Connect(remoteEndPoint);
+    }
+
+    void OnDestroy()
+    {
+        if (client != null)
+            client.Stop();
     }
 
     public void OnHandReceived(string message)
@@ -96,7 +99,7 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
 
     public void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
     {
-        gameBehaviour.GameLost();
+        //gameBehaviour.GameLost();
         connected = false;
     }
 
@@ -115,14 +118,14 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
                 var message = reader.GetString(1000);
                 Debug.Log("Got chips " + message);
                 var chips = message.Split('|').Select(c => new Chip(c)).ToList();
-                gameUiBehaviour.OnHandReceived(chips);
+                //gameUiBehaviour.OnHandReceived(chips);
             }
             else if(type == MessageType.Command)
             {
                 var message = reader.GetString(1000);
                 Debug.Log("Got command " + message);
                 var commands = message.Split('|').Select(c => new Command(c)).ToList();
-                gameBehaviour.OnCommandReceived(commands);
+                //gameBehaviour.OnCommandReceived(commands);
             }
         }
     }
@@ -132,7 +135,7 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
         //Debug.Log(string.Format("[Client] ReceiveUnconnected {0}. From: {1}. Data: {2}", messageType, remoteEndPoint, reader.GetString(1000)));
         if (messageType == UnconnectedMessageType.DiscoveryResponse)
         {
-            gameBehaviour.GameFound(remoteEndPoint);
+            lobby.GameFound(remoteEndPoint);
         }
     }
 

@@ -10,11 +10,13 @@ public class InitColour : ScreenBehaviour
     public Sprite spriteSwatchSelected;
     string colourSelected = "";
 
-    List<GameObject> swatches = new List<GameObject>();
+
+    Dictionary<string, GameObject> swatches = new Dictionary<string, GameObject>();
 
     public override void OnEnable()
     {
         base.OnEnable();
+        confirm = transform.Find("Panel/Confirm").GetComponent<Button>();
         confirm = transform.Find("Panel/Confirm").GetComponent<Button>();
     }
 
@@ -25,8 +27,11 @@ public class InitColour : ScreenBehaviour
         for (int i = 0; i < Colours.AllColours.Length; i++)
         {
             var swatch = CreateSwatch(parent, Colours.AllColours[i], i);
-            swatches.Add(swatch);
+            swatches.Add(Colours.AllColours[i], swatch);
         }
+
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPreferences.Colour)))
+            SelectSwatch(swatches[PlayerPrefs.GetString(PlayerPreferences.Colour)], PlayerPrefs.GetString(PlayerPreferences.Colour));
     }
 
     public override void Update()
@@ -39,8 +44,12 @@ public class InitColour : ScreenBehaviour
     {
         base.OnEnter(from);
 
-        if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPreferences.Colour)))
-            GoForwardImmediately(transitionTo[0]);
+        if (from == null)
+            return;
+
+        if (from.GetComponent<GameLobby>() == null)
+            if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPreferences.Colour)))
+                GoForwardImmediately(transitionTo[0]);
     }
 
     GameObject CreateSwatch(Transform parent, string colour, int index)
@@ -78,7 +87,7 @@ public class InitColour : ScreenBehaviour
     void SelectSwatch(GameObject selectedSwatch, string colour)
     {
         foreach (var swatch in swatches)
-            swatch.GetComponent<Image>().sprite = spriteSwatch;
+            swatch.Value.GetComponent<Image>().sprite = spriteSwatch;
         selectedSwatch.GetComponent<Image>().sprite = spriteSwatchSelected;
         colourSelected = colour;
         PlayerPrefs.SetString(PlayerPreferences.Colour, colour);

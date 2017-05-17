@@ -16,10 +16,15 @@ public class InitNickname : ScreenBehaviour
     public override void Start()
     {
         base.Start();
+
+        // Special handling because this screen is first one
         if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPreferences.Nickname)))
             GoForwardImmediately(transitionTo[0]);
         else
             rect.anchoredPosition = Vector2.zero;
+
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPreferences.Nickname)))
+            input.text = PlayerPrefs.GetString(PlayerPreferences.Nickname);
     }
 
     public override void Update()
@@ -28,5 +33,17 @@ public class InitNickname : ScreenBehaviour
         confirm.interactable = !string.IsNullOrEmpty(input.text);
         if (!string.IsNullOrEmpty(input.text))
             PlayerPrefs.SetString(PlayerPreferences.Nickname, input.text);
+    }
+
+    public override void OnEnter(ScreenBehaviour from)
+    {
+        base.OnEnter(from);
+
+        if (from == null)
+            return;
+
+        if (from.GetComponent<GameLobby>() == null)
+            if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPreferences.Nickname)))
+                GoForwardImmediately(transitionTo[0]);
     }
 }
