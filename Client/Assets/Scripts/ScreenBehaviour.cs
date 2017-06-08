@@ -19,6 +19,7 @@ public class ScreenBehaviour : MonoBehaviour
     {
         rect = GetComponent<RectTransform>();
         rect.anchoredPosition = positionRight;
+        screenPosition = ScreenPosition.Right;
     }
 
     public virtual void Start()

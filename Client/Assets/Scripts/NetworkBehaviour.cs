@@ -10,15 +10,17 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
     NetManager client;
     private bool connected;
 
-    GameLobby lobby;
+    ICommandHandler commandHandler;
+    IFlowHandler flowHandler;
 
     void Start()
     {
     }
 
-    public void StartSearching(GameLobby lobby)
+    public void StartSearching<T>(T screen) where T : ICommandHandler, IFlowHandler
     {
-        this.lobby = lobby;
+        commandHandler = screen;
+        flowHandler = screen;
 
         client = new NetManager(this, "SomeConnectionKey");
         client.Start();
@@ -51,8 +53,10 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
             client.Stop();
     }
 
-    public void OnHandReceived(string message)
+    public void ChangeHandler<T>(T handler) where T : ICommandHandler, IFlowHandler
     {
+        commandHandler = handler;
+        flowHandler = handler;
     }
 
     public void SendCommands(Command[] commands)
@@ -88,8 +92,6 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
         writer.Put(str);
         client.SendToAll(writer, SendOptions.ReliableOrdered);
         Debug.Log("Sending hint " + str);
-
-        throw new NotImplementedException();
     }
 
     public void OnPeerConnected(NetPeer peer)
@@ -99,7 +101,8 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
 
     public void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
     {
-        //gameBehaviour.GameLost();
+        if (flowHandler != null)
+            flowHandler.GameLost();
         connected = false;
     }
 
@@ -111,21 +114,23 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
     public void OnNetworkReceive(NetPeer peer, NetDataReader reader)
     {
         MessageType type;
-        if(MessageParser.TryParse(ref reader, out type))
+        if (MessageParser.TryParse(ref reader, out type))
         {
-            if(type == MessageType.Chip)
+            if (type == MessageType.Chip)
             {
                 var message = reader.GetString(1000);
                 Debug.Log("Got chips " + message);
                 var chips = message.Split('|').Select(c => new Chip(c)).ToList();
-                //gameUiBehaviour.OnHandReceived(chips);
+                if (commandHandler != null)
+                    commandHandler.ReceiveChips(chips);
             }
-            else if(type == MessageType.Command)
+            else if (type == MessageType.Command)
             {
                 var message = reader.GetString(1000);
                 Debug.Log("Got command " + message);
                 var commands = message.Split('|').Select(c => new Command(c)).ToList();
-                //gameBehaviour.OnCommandReceived(commands);
+                if (commandHandler != null)
+                    commandHandler.ReceiveCommand(commands);
             }
         }
     }
@@ -135,7 +140,8 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
         //Debug.Log(string.Format("[Client] ReceiveUnconnected {0}. From: {1}. Data: {2}", messageType, remoteEndPoint, reader.GetString(1000)));
         if (messageType == UnconnectedMessageType.DiscoveryResponse)
         {
-            lobby.GameFound(remoteEndPoint);
+            if (flowHandler != null)
+                flowHandler.GameFound(remoteEndPoint);
         }
     }
 

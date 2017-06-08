@@ -5,8 +5,9 @@ using LiteNetLib;
 using UnityEngine;
 using UnityEngine.UI;
 using ProjectCardboardBox;
+using System.Linq;
 
-public class GameLobby : ScreenBehaviour
+public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
 {
     State state = State.Uninit;
     NetEndPoint remoteEndPoint;
@@ -67,13 +68,25 @@ public class GameLobby : ScreenBehaviour
         changeState(State.Joined);
     }
 
-    internal void GameFound(NetEndPoint remoteEndPoint)
+    public void GameFound(NetEndPoint remoteEndPoint)
     {
         if (this.remoteEndPoint != null)
             if (this.remoteEndPoint.Host == remoteEndPoint.Host)
                 return;
         this.remoteEndPoint = remoteEndPoint;
         changeState(State.Found);
+    }
+
+    public void ReceiveCommand(List<Command> commands)
+    {
+        var com = commands.FirstOrDefault(c => c.type == ProjectCardboardBox.Action.CONFIRMREADY);
+        if (com != null)
+        {
+            networkBehaviour.ChangeHandler((GameMain)transitionTo.FirstOrDefault(s => typeof(GameMain).IsInstanceOfType(s)));
+            GoForward(transitionTo.FirstOrDefault(s => typeof(GameMain).IsInstanceOfType(s)));
+            int numChips = FindObjectOfType<GameMain>().chipPerRow * 2;
+            networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.REQUESTCHIPS, numChips));
+        }
     }
 
     void changeState(State newState)
@@ -100,6 +113,16 @@ public class GameLobby : ScreenBehaviour
                 notreadyButton.gameObject.SetActive(true);
                 break;
         }
+    }
+
+    public void ReceiveChips(List<Chip> chips)
+    {
+        Debug.LogError("ReceiveChips called on GameLobby, that's unexpected!");
+    }
+
+    public void GameLost()
+    {
+        Debug.LogError("GameLost called on GameLobby, that's unexpected!");
     }
 
     enum State

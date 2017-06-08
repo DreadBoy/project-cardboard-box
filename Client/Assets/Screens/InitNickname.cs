@@ -31,8 +31,6 @@ public class InitNickname : ScreenBehaviour
     {
         base.Update();
         confirm.interactable = !string.IsNullOrEmpty(input.text);
-        if (!string.IsNullOrEmpty(input.text))
-            PlayerPrefs.SetString(PlayerPreferences.Nickname, input.text);
     }
 
     public override void OnEnter(ScreenBehaviour from)
@@ -45,5 +43,19 @@ public class InitNickname : ScreenBehaviour
         if (from.GetComponent<GameLobby>() == null)
             if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPreferences.Nickname)))
                 GoForwardImmediately(transitionTo[0]);
+    }
+
+    public void Skip()
+    {
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPreferences.Nickname)))
+            input.text = PlayerPrefs.GetString(PlayerPreferences.Nickname);
+        GoForward();
+    }
+
+    public void Confirm()
+    {
+        if (!string.IsNullOrEmpty(input.text))
+            PlayerPrefs.SetString(PlayerPreferences.Nickname, input.text);
+        GoForward();
     }
 }

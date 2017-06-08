@@ -10,11 +10,14 @@ public class ChipBehaviour : MonoBehaviour
     public Chip chip;
     public RectTransform rectTransform;
     public Text text;
+    public Image image;
     public Button button;
 
-    LerpHelper<Vector2> lerpPosition;
+    public Sprite turnSprite, moveSprite;
 
-    GameUIBehaviour gameUiBehaviour;
+    GameMain gameMain;
+
+    LerpHelper<Vector2> lerpPosition;
 
     private bool _enabled = true;
     public bool Valid
@@ -36,19 +39,34 @@ public class ChipBehaviour : MonoBehaviour
             rectTransform = GetComponent<RectTransform>();
         if (text == null)
             text = GetComponentInChildren<Text>();
+        if (image == null)
+            image = GetComponentInChildren<Image>();
         if (button == null)
             button = GetComponent<Button>();
     }
 
+    public void Init(Chip chip, GameMain game)
+    {
+        this.chip = chip;
+        gameMain = game;
+        transform.SetParent(game.transform);
+    }
 
     void Start()
     {
-        gameUiBehaviour = FindObjectOfType<GameUIBehaviour>();
-
         var button = GetComponent<Button>();
         button.onClick.AddListener(onClick);
 
-        text.text = chip.value;
+        if (chip.type == Chip.Type.Action)
+        {
+            if (chip.value == Action.MOVE.ToString())
+                image.sprite = moveSprite;
+            else if (chip.value == Action.TURN.ToString())
+                image.sprite = turnSprite;
+            image.color = Color.white;
+        }
+        else
+            text.text = chip.value;
     }
 
     void Update()
@@ -64,7 +82,7 @@ public class ChipBehaviour : MonoBehaviour
 
     public void onClick()
     {
-        gameUiBehaviour.TransferChip(this);
+        gameMain.TransferChip(this);
     }
 
     public void LerpTo(Vector2 anchoredPosition)

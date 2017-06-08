@@ -32,22 +32,11 @@ public class SendButtonBehaviour : MonoBehaviour
         set
         {
             _valid = value;
-            if (_valid)
-                image.sprite = validSprite;
-            else
-                image.sprite = invalidSprite;
+            //if (_valid)
+            //    image.sprite = validSprite;
+            //else
+            //    image.sprite = invalidSprite;
             button.interactable = _valid;
         }
-    }
-
-    void Start()
-    {
-    }
-
-
-
-    void Update()
-    {
-
     }
 }

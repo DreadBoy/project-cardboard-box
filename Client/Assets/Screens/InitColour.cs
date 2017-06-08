@@ -90,7 +90,6 @@ public class InitColour : ScreenBehaviour
             swatch.Value.GetComponent<Image>().sprite = spriteSwatch;
         selectedSwatch.GetComponent<Image>().sprite = spriteSwatchSelected;
         colourSelected = colour;
-        PlayerPrefs.SetString(PlayerPreferences.Colour, colour);
     }
 
     class SwatchClicked
@@ -109,5 +108,18 @@ public class InitColour : ScreenBehaviour
         {
             initColour.SelectSwatch(Swatch, Colour);
         }
+    }
+
+    public void Skip()
+    {
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPreferences.Colour)))
+            SelectSwatch(swatches[PlayerPrefs.GetString(PlayerPreferences.Colour)], PlayerPrefs.GetString(PlayerPreferences.Colour));
+        GoForward();
+    }
+
+    public void Confirm()
+    {
+        PlayerPrefs.SetString(PlayerPreferences.Colour, colourSelected);
+        GoForward();
     }
 }
