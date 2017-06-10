@@ -5,11 +5,13 @@ using System.Text;
 using LiteNetLib;
 using ProjectCardboardBox;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameMain : ScreenBehaviour, ICommandHandler, IFlowHandler
 {
     NetworkBehaviour networkBehaviour;
     public SendButtonBehaviour sendButton;
+    public Text hint;
 
     public RectTransform panel;
     public ChipBehaviour chipPrefab;
@@ -23,7 +25,15 @@ public class GameMain : ScreenBehaviour, ICommandHandler, IFlowHandler
     Vector2 sourceSpace = new Vector2(102.5f, -100);
     Vector2 destinationSpace = new Vector2(102.5f, -100);
 
-    public int chipPerRow = 9;
+    public int chipPerRow = 5;
+
+    bool yourTurn = false;
+    float yourTurnStart = -1;
+
+    string[] hints = {
+        @"Other players are making their moves and soon it's going to be your turn. You can prepare your move though...
+Each move consists of one action, followed by one or more modifiers. Modifers are summed together.",
+    @"It's your turn! Quickly make your move and send it to playing field, your character is waiting!"};
 
     public override void Start()
     {
@@ -141,12 +151,34 @@ public class GameMain : ScreenBehaviour, ICommandHandler, IFlowHandler
         Debug.Log("Game lost!");
     }
 
-    #region unused
-
     public void ReceiveCommand(List<Command> commands)
     {
-        Debug.Log("Main receive command");
+        foreach (var command in commands)
+        {
+            if (command.type == ProjectCardboardBox.Action.YOURTURN)
+            {
+                yourTurn = true;
+                yourTurnStart = Time.time;
+                sendButton.YourTurn();
+            }
+        }
     }
+
+    public override void Update()
+    {
+        base.Update();
+        if (yourTurnStart > 0)
+        {
+            if (yourTurnStart + 10 < Time.time)
+            {
+                yourTurn = false;
+                yourTurnStart = -1;
+                sendButton.WaitingForTurn();
+            }
+        }
+    }
+
+    #region unused
 
     public void GameFound(NetEndPoint remoteEndPoint)
     {

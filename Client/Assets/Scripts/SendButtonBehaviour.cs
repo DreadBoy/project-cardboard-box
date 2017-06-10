@@ -12,6 +12,7 @@ public class SendButtonBehaviour : MonoBehaviour
     public Image image;
     public Sprite invalidSprite;
     Sprite validSprite;
+    Text text;
 
     void OnEnable()
     {
@@ -20,6 +21,8 @@ public class SendButtonBehaviour : MonoBehaviour
             image = GetComponent<Image>();
         if (button == null)
             button = GetComponent<Button>();
+        text = GetComponentInChildren<Text>();
+        WaitingForTurn();
     }
 
     bool _valid = false;
@@ -32,11 +35,19 @@ public class SendButtonBehaviour : MonoBehaviour
         set
         {
             _valid = value;
-            //if (_valid)
-            //    image.sprite = validSprite;
-            //else
-            //    image.sprite = invalidSprite;
             button.interactable = _valid;
         }
+    }
+
+    public void WaitingForTurn()
+    {
+        text.text = "Waiting...";
+        button.interactable = false;
+    }
+
+    public void YourTurn()
+    {
+        text.text = "Send";
+        button.interactable = _valid;
     }
 }

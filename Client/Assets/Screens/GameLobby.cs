@@ -109,7 +109,7 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
                 readyButton.gameObject.SetActive(true);
                 break;
             case State.Ready:
-                status.text = "Waiting for \nother players";
+                status.text = "Waiting for another players";
                 notreadyButton.gameObject.SetActive(true);
                 break;
         }
