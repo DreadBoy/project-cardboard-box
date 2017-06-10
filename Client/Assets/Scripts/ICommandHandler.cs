@@ -7,5 +7,4 @@ using System.Text;
 public interface ICommandHandler
 {
     void ReceiveCommand(List<Command> commands);
-    void ReceiveChips(List<Chip> chips);
 }

@@ -29,6 +29,8 @@ public class GameBehaviour : MonoBehaviour
     public SmartEvent<changeStateArgs> changeStateEvent = new SmartEvent<changeStateArgs>();
     public SmartEvent<GridCompiledArgs> gridCompiledEvent = new SmartEvent<GridCompiledArgs>();
 
+    PlayerBehaviour playerOnTurn;
+
     void Awake()
     {
         lobby = FindObjectOfType<LobbyBehaviour>();
@@ -55,16 +57,18 @@ public class GameBehaviour : MonoBehaviour
         //subscribe to player's connection
         connection.CommandReceived.Event += CommandReceived_Event;
         connection.HintReceived.Event += HintReceived_Event;
-        player.chipsEvent.Event += ChipsEvent;
+        player.EndTurn.Event += EndTurnEvent;
 
         return player;
     }
 
-    private void ChipsEvent(object sender, ChipsArgs e)
+    private void EndTurnEvent(object sender, EndTurnArgs e)
     {
         var index = players.IndexOf(e.player);
-        string str = string.Join("|", e.chips.Select(c => c.ToString()).ToArray());
-        connections[index].Send(MessageType.Chip, str);
+        index++;
+        if (index >= connections.Count)
+            index = 0;
+        connections[index].Send(MessageType.Command, new Command(ProjectCardboardBox.Action.YOURTURN).ToString());
     }
 
     private void CommandReceived_Event(object sender, CommandArgs e)
@@ -139,6 +143,8 @@ public class GameBehaviour : MonoBehaviour
         {
             conn.Send(MessageType.Command, new Command(ProjectCardboardBox.Action.CONFIRMREADY).ToString());
         }
+        playerOnTurn = players[0];
+        connections[0].Send(MessageType.Command, new Command(ProjectCardboardBox.Action.YOURTURN).ToString());
 
     }
 

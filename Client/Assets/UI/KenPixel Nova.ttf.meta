@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 1270e787a9a32de4fadbe142f4e5b6f5
+timeCreated: 1497099365
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: KenPixel Nova
+  fontNames:
+  - KenPixel Nova
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -17,22 +17,25 @@ public class GameMain : ScreenBehaviour, ICommandHandler, IFlowHandler
     public ChipBehaviour chipPrefab;
 
     List<ChipBehaviour> sourceChips = new List<ChipBehaviour>();
+
     List<ChipBehaviour> destinationChips = new List<ChipBehaviour>();
+    Vector2[] destinationSlots = {
+            new Vector2(525, -180),
+            new Vector2(625, -180),
+            new Vector2(725, -180),
+            new Vector2(825, -180),
+            new Vector2(925, -180),
+            new Vector2(1025, -180),
+            new Vector2(1125, -180),
+        };
 
-    Vector2 sourceStart = new Vector2(-410, 200);
-    Vector2 destinationStart = new Vector2(-410, -100);
 
-    Vector2 sourceSpace = new Vector2(102.5f, -100);
-    Vector2 destinationSpace = new Vector2(102.5f, -100);
-
-    public int chipPerRow = 5;
-
-    bool yourTurn = false;
     float yourTurnStart = -1;
 
     string[] hints = {
-        @"Other players are making their moves and soon it's going to be your turn. You can prepare your move though...
-Each move consists of one action, followed by one or more modifiers. Modifers are summed together.",
+        @"Other players are making their moves and soon it's going to be your turn. You can prepare your commands though...
+
+Each command consists of one action, followed by one or more multipliers. Multipliers are summed together and you can create 2 commands at once.",
     @"It's your turn! Quickly make your move and send it to playing field, your character is waiting!"};
 
     public override void Start()
@@ -44,33 +47,63 @@ Each move consists of one action, followed by one or more modifiers. Modifers ar
             sendButton = FindObjectOfType<SendButtonBehaviour>();
     }
 
-    public void ReceiveChips(List<Chip> chips)
-    {
-        this.sourceChips.AddRange(chips.Select(c =>
-        {
-            var chip = Instantiate(chipPrefab);
-            chip.Init(c, this);
-            return chip;
-        }));
-
-        UpdateChips();
-    }
-
     public void TransferChip(ChipBehaviour chip)
     {
-        if (sourceChips.Contains(chip))
+        if (destinationChips.Contains(chip))
         {
-            sourceChips.Remove(chip);
-            destinationChips.Add(chip);
-        }
-        else if (destinationChips.Contains(chip))
-        {
+            Destroy(chip.gameObject);
             destinationChips.Remove(chip);
-            sourceChips.Add(chip);
+            ReorderChips(destinationChips);
+            return;
         }
-        UpdateChips();
+
+        if (!canMoveToDest(chip))
+            return;
+
+        var chipNew = Instantiate(chip.gameObject).GetComponent<ChipBehaviour>();
+        chipNew.Init(this, panel.gameObject, destinationSlots[destinationChips.Count]);
+
+        destinationChips.Add(chipNew.GetComponent<ChipBehaviour>());
+        ReorderChips(destinationChips);
         UpdateSendButton();
         SendHint();
+    }
+
+    public void ReorderChips(List<ChipBehaviour> chips)
+    {
+        // We don't have action in our command
+        if(chips.FirstOrDefault(c => c.chip.type == Chip.Type.Action) == null)
+        {
+            ClearAll();
+            return;
+        }
+        var action = chips.FirstOrDefault(c => c.chip.type == Chip.Type.Action);
+        chips.Remove(action);
+        chips.Insert(0, action);
+
+        for (int i = 0; i < chips.Count; i++)
+        {
+            chips[i].LerpTo(destinationSlots[i]);
+        }
+    }
+
+    public bool canMoveToDest(ChipBehaviour chip)
+    {
+        // We want to insert action and command already have action
+        if (chip.chip.type == Chip.Type.Action)
+            if (destinationChips.FirstOrDefault(c => c.chip.type == Chip.Type.Action) != null)
+                return false;
+
+        // We want to insert number and command is already full
+        if (chip.chip.type == Chip.Type.Number)
+        {
+            if (destinationChips.Count == 7)
+                return false;
+            // or command doesn't have action yet
+            if (destinationChips.FirstOrDefault(c => c.chip.type == Chip.Type.Action) == null)
+                return false;
+        }
+        return true;
     }
 
     private void SendHint()
@@ -88,44 +121,14 @@ Each move consists of one action, followed by one or more modifiers. Modifers ar
     internal void ClearAll()
     {
         DestroyChips(destinationChips);
-        DestroyChips(sourceChips);
         destinationChips.Clear();
-        sourceChips.Clear();
-    }
-
-    public void UpdateChips()
-    {
-        for (int i = 0; i < sourceChips.Count; i++)
-        {
-            var chip = sourceChips[i];
-            chip.transform.SetParent(panel);
-            chip.rectTransform.localScale = Vector3.one;
-            chip.LerpTo(
-                sourceStart +
-                new Vector2(
-                    (i % chipPerRow) * sourceSpace.x,
-                    (i - i % chipPerRow) / chipPerRow * sourceSpace.y));
-            chip.Valid = Command.IsNextChipValid(destinationChips.Select(c => c.chip).ToArray(), chip.chip);
-        }
-
-        for (int i = 0; i < destinationChips.Count; i++)
-        {
-            var chip = destinationChips[i];
-            chip.transform.SetParent(panel);
-            chip.rectTransform.localScale = Vector3.one;
-            chip.LerpTo(
-                destinationStart +
-                new Vector2(
-                    (i % chipPerRow) * destinationSpace.x,
-                    (i - i % chipPerRow) / chipPerRow * destinationSpace.y));
-        }
     }
 
     void UpdateSendButton()
     {
         List<Command> commands;
         var valid = Command.TryParseHand(destinationChips.Select(c => c.chip).ToArray(), out commands);
-        sendButton.Valid = valid;
+        sendButton.Valid = valid && yourTurnStart > 0;
     }
 
     void DestroyChips(List<ChipBehaviour> chips)
@@ -138,11 +141,9 @@ Each move consists of one action, followed by one or more modifiers. Modifers ar
         List<Command> commands;
         if (Command.TryParseHand(destinationChips.Select(c => c.chip).ToArray(), out commands))
         {
-            commands.Insert(0, new Command(ProjectCardboardBox.Action.REQUESTCHIPS, destinationChips.Count));
             networkBehaviour.SendCommands(commands.ToArray());
             DestroyChips(destinationChips);
             destinationChips.Clear();
-            UpdateChips();
         }
     }
 
@@ -157,9 +158,10 @@ Each move consists of one action, followed by one or more modifiers. Modifers ar
         {
             if (command.type == ProjectCardboardBox.Action.YOURTURN)
             {
-                yourTurn = true;
+                Debug.Log("It's my turn!");
                 yourTurnStart = Time.time;
                 sendButton.YourTurn();
+                hint.text = hints[1];
             }
         }
     }
@@ -171,9 +173,10 @@ Each move consists of one action, followed by one or more modifiers. Modifers ar
         {
             if (yourTurnStart + 10 < Time.time)
             {
-                yourTurn = false;
                 yourTurnStart = -1;
                 sendButton.WaitingForTurn();
+                hint.text = hints[0];
+                networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.MOVE, 0));
             }
         }
     }

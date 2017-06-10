@@ -84,8 +84,6 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
         {
             networkBehaviour.ChangeHandler((GameMain)transitionTo.FirstOrDefault(s => typeof(GameMain).IsInstanceOfType(s)));
             GoForward(transitionTo.FirstOrDefault(s => typeof(GameMain).IsInstanceOfType(s)));
-            int numChips = FindObjectOfType<GameMain>().chipPerRow * 2;
-            networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.REQUESTCHIPS, numChips));
         }
     }
 

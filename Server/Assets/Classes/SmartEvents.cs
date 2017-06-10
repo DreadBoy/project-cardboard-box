@@ -57,14 +57,12 @@ public class changeStateArgs : EventArgs
     }
 }
 
-public class ChipsArgs : EventArgs
+public class EndTurnArgs : EventArgs
 {
-    public List<Chip> chips;
     public PlayerBehaviour player;
 
-    public ChipsArgs(List<Chip> chips, PlayerBehaviour player)
+    public EndTurnArgs(PlayerBehaviour player)
     {
-        this.chips = chips;
         this.player = player;
     }
 }

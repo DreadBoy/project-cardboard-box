@@ -40,7 +40,7 @@ public class PlayerBehaviour : MonoBehaviour
     LerpHelper<Quaternion> lerpRotation = null;
     LerpHelper<Vector3> lerpBounce = null;
 
-    public SmartEvent<ChipsArgs> chipsEvent = new SmartEvent<ChipsArgs>();
+    public SmartEvent<EndTurnArgs> EndTurn = new SmartEvent<EndTurnArgs>();
 
     public Animator animator;
     public Vector3 velocity = Vector3.zero;
@@ -90,6 +90,8 @@ public class PlayerBehaviour : MonoBehaviour
                 {
                     StopMoving();
                     SnapToGrid();
+                    if (commandQueue.Count == 0)
+                        EndTurn.RaiseEvent(new EndTurnArgs(this));
                 }
             }
 
@@ -100,6 +102,8 @@ public class PlayerBehaviour : MonoBehaviour
                 if (lerpRotation.IsDone())
                 {
                     StopRotating();
+                    if (commandQueue.Count == 0)
+                        EndTurn.RaiseEvent(new EndTurnArgs(this));
                 }
             }
         }
@@ -132,8 +136,7 @@ public class PlayerBehaviour : MonoBehaviour
         }
         else if (command.type == Action.REQUESTCHIPS)
         {
-            //NOTE You can generate chips based on current situation
-            chipsEvent.RaiseEvent(new ChipsArgs(GenerateChips(command.number), this));
+            Debug.LogError("Cient can't request chip any more! Outdated client?");
         }
     }
 
@@ -149,44 +152,6 @@ public class PlayerBehaviour : MonoBehaviour
         commandQueue.Clear();
         StopMoving();
         StopRotating();
-    }
-
-    List<Chip> GenerateChips(int number)
-    {
-        List<Chip> chips = new List<Chip>();
-        int numNumber = 0, numAction = 0;
-        for (int i = 0; i < number; i++)
-        {
-            var type = Random.Range(0, 3);
-            if (new int[] { 0 }.Contains(type))
-            {
-                // some chance to generate action
-                var action = (Action)Random.Range(0, Enum.GetValues(typeof(Action)).Cast<int>().Max() + 1);
-                chips.Add(new Chip(Chip.Type.Action, action.ToString()));
-                numAction++;
-            }
-            else if (new int[] { 1, 2 }.Contains(type))
-            {
-                // some chance to generate number
-                chips.Add(new Chip(Chip.Type.Number, Random.Range(0, 10).ToString()));
-                numNumber++;
-            }
-        }
-        if (numNumber == 0)
-        {
-            var act = chips.Where(c => c.type == Chip.Type.Action).ToList();
-            var first = act.First();
-            var index = chips.IndexOf(first);
-            chips[index] = new Chip(Chip.Type.Number, Random.Range(0, 10).ToString());
-        }
-        if (numAction == 0)
-        {
-            var nums = chips.Where(c => c.type == Chip.Type.Number).ToList();
-            var first = nums.First();
-            var index = chips.IndexOf(first);
-            chips[index] = new Chip(Chip.Type.Action, ((Action)Random.Range(0, Enum.GetValues(typeof(Action)).Cast<int>().Max() + 1)).ToString());
-        }
-        return chips;
     }
 
 

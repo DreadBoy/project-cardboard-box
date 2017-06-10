@@ -118,11 +118,7 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
         {
             if (type == MessageType.Chip)
             {
-                var message = reader.GetString(1000);
-                Debug.Log("Got chips " + message);
-                var chips = message.Split('|').Select(c => new Chip(c)).ToList();
-                if (commandHandler != null)
-                    commandHandler.ReceiveChips(chips);
+                Debug.LogError("Client can't receive chip any more! Is server outdated?");
             }
             else if (type == MessageType.Command)
             {

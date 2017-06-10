@@ -5,6 +5,7 @@ using System.Text;
 
 namespace ProjectCardboardBox
 {
+    [Serializable]
     public class Chip
     {
         public string value;
