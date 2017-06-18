@@ -29,7 +29,6 @@ class Testing : MonoBehaviour
 
         grid.GetComponent<PlayerSpawnerMock>().spawnPoints = new List<Vector2>(spawnPoints);
 
-        game.PlayerConnect(conn1);
         //game.PlayerConnect(conn2);
 
         //EventBasedNetListener listener = new EventBasedNetListener();
@@ -59,16 +58,21 @@ class Testing : MonoBehaviour
     {
         time += Time.deltaTime;
         //client.PollEvents();
-        if (time > 0.4 && !triggered2)
+        if (time > 1f && !triggered2)
         {
             triggered2 = true;
 
+			game.PlayerConnect(conn1);
             conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.player));
+            conn1.HintReceived.RaiseEvent(new HintArgs("", conn1.player));
+
+            conn1.HintReceived.RaiseEvent(new HintArgs("TURN:1|TURN:1|MOVE:5", conn1.player));
+
             //NetDataWriter writer = new NetDataWriter();
             //writer.Put("CLIENT 1 DISCOVERY REQUEST");
             //client.SendDiscoveryRequest(writer, 9050);
         }
-        if (time > 2f && !triggered1)
+        if (time > 4f && !triggered1)
         {
             triggered1 = true;
 
@@ -77,10 +81,8 @@ class Testing : MonoBehaviour
             //var free = grid.IsSpotFree((int)spawnPoints[0].x, (int)spawnPoints[0].y);
 
             //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn1.player));
-            //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn1.player));
-            conn1.HintReceived.RaiseEvent(new HintArgs("", conn1.player));
-
-            conn1.HintReceived.RaiseEvent(new HintArgs("TURN:1|TURN:1|MOVE:5", conn1.player));
+			//conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn1.player));
+            game.PlayerDisconnect(conn1);
 
             //conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn2.player));
             //conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn2.player));

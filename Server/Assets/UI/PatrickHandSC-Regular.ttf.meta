@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 5da6467c5aebc4d4ba32649f1f617cc8
+timeCreated: 1497792989
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Patrick Hand SC
+  fontNames:
+  - Patrick Hand SC
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -28,6 +28,9 @@ public class GameBehaviour : MonoBehaviour
 
     public SmartEvent<changeStateArgs> changeStateEvent = new SmartEvent<changeStateArgs>();
     public SmartEvent<GridCompiledArgs> gridCompiledEvent = new SmartEvent<GridCompiledArgs>();
+    public SmartEvent<EventArgs> firstPlayerConnected = new SmartEvent<EventArgs>();
+    public SmartEvent<EventArgs> playing = new SmartEvent<EventArgs>();
+    public SmartEvent<EventArgs> lastPlayerDisconnected = new SmartEvent<EventArgs>();
 
     PlayerBehaviour playerOnTurn;
 
@@ -58,6 +61,9 @@ public class GameBehaviour : MonoBehaviour
         connection.CommandReceived.Event += CommandReceived_Event;
         connection.HintReceived.Event += HintReceived_Event;
         player.EndTurn.Event += EndTurnEvent;
+
+		if (players.Count == 1)
+			firstPlayerConnected.RaiseEvent (new EventArgs ());
 
         return player;
     }
@@ -102,6 +108,7 @@ public class GameBehaviour : MonoBehaviour
         {
             state = State.lobby;
             changeStateEvent.RaiseEvent(new changeStateArgs(state));
+			lastPlayerDisconnected.RaiseEvent (new EventArgs ());
         }
     }
 
@@ -110,6 +117,7 @@ public class GameBehaviour : MonoBehaviour
         if (state == State.lobby && players.Count > 0 && players.Find(pl => pl.state != PlayerBehaviour.State.ready) == null)
         {
             ChangeToState_Game();
+            playing.RaiseEvent(new EventArgs());
         }
         if (state == State.game && players.Count > 1 && players.Count(pl => pl.state != PlayerBehaviour.State.dead) == 1)
         {

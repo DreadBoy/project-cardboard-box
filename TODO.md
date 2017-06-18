@@ -4,14 +4,18 @@
 - [ ] Display hint at final destination not player's current destination
 
 ##Planned features
-- [x] When player dies, client should change screen and display "game over" screen
+- [ ] When player dies or server closes, client should change screen and display "game over" screen
 - [ ] When there's only 1 player alive, server should display end screen with scoreboard
 - [ ] When player dies or is victorious, server should notify it of outcome
 - [ ] Assign player colour to each player. Display all color cards near top edge of screen on server and change background (which one?) of client's chips/sections/buttons. Also change colour of hints.
 - [x] Display hints on server when player is assembling command
-- [ ] When player launches client for the first time, ask him for name and colour
-- [ ] When player waits for other players, have an option to change colour
+- [x] When player launches client for the first time, ask him for name and colour
+- [x] When player waits for other players, have an option to change name and colour
 
+- [x] When server is launched, display some introduction and QR code. 
+- [x] When first player joins, animates QR code to both left and right of title screen and hide text
+- [ ] When client is waiting for a game longer then 10 seconds, display little "Help?" button.
+- [ ] When "Help?" button is clicked, show dialog, explaning that there's PC game and common troubleshooting
 
 ##Screens for name and colour
 When user joins for first time, ask him about nickname. Simple text "What's your nickname?" with input below. Under input is disabled button "Confirm" and further down is "Skip" button. When entered or skipped, screen swipes left and from right next screen with colour selection. "What's your colour?" with 10 swatches and same "Confirm" and "Skip" buttons. 
