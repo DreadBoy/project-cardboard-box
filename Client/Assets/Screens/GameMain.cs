@@ -12,6 +12,7 @@ public class GameMain : ScreenBehaviour, ICommandHandler, IFlowHandler
     NetworkBehaviour networkBehaviour;
     public SendButtonBehaviour sendButton;
     public Text hint;
+    public Text timeCounter;
 
     public RectTransform panel;
     public ChipBehaviour chipPrefab;
@@ -37,6 +38,8 @@ public class GameMain : ScreenBehaviour, ICommandHandler, IFlowHandler
 
 Each command consists of one action, followed by one or more multipliers. Multipliers are summed together and you can create 2 commands at once.",
     @"It's your turn! Quickly make your move and send it to playing field, your character is waiting!"};
+
+    string timeCount = "Time remaining: ";
 
     public override void Start()
     {
@@ -171,7 +174,8 @@ Each command consists of one action, followed by one or more multipliers. Multip
         base.Update();
         if (yourTurnStart > 0)
         {
-            if (yourTurnStart + 10 < Time.time)
+            timeCounter.text = timeCount + Math.Floor(11 + yourTurnStart - Time.time);
+            if (yourTurnStart + 11 < Time.time)
             {
                 yourTurnStart = -1;
                 sendButton.WaitingForTurn();
@@ -179,6 +183,8 @@ Each command consists of one action, followed by one or more multipliers. Multip
                 networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.MOVE, 0));
             }
         }
+        else
+            timeCounter.text = "";
     }
 
     #region unused
