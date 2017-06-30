@@ -151,11 +151,6 @@ Each command consists of one action, followed by one or more multipliers. Multip
         }
     }
 
-    public void GameLost()
-    {
-        GoForward(transitionTo.FirstOrDefault(s => typeof(GameLobby).IsInstanceOfType(s)));
-    }
-
     public void ReceiveCommand(List<Command> commands)
     {
         foreach (var command in commands)
@@ -186,6 +181,20 @@ Each command consists of one action, followed by one or more multipliers. Multip
         }
         else
             timeCounter.text = "";
+    }
+
+    public void GameLost()
+    {
+        networkBehaviour.ChangeHandler((GameLobby)transitionTo.FirstOrDefault(s => typeof(GameLobby).IsInstanceOfType(s)));
+        GoForward(transitionTo.FirstOrDefault(s => typeof(GameLobby).IsInstanceOfType(s)));
+    }
+
+    public void ServerDisconnected()
+    {
+        var lobby = (GameLobby)transitionTo.FirstOrDefault(s => typeof(GameLobby).IsInstanceOfType(s));
+        lobby.ServerDisconnected();
+        networkBehaviour.ChangeHandler(lobby);
+        GoForward(lobby);
     }
 
     #region unused

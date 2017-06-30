@@ -8,4 +8,5 @@ public interface IFlowHandler
 {
     void GameFound(NetEndPoint remoteEndPoint);
     void GameLost();
+    void ServerDisconnected();
 }

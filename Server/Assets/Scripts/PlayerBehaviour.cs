@@ -187,6 +187,8 @@ public class PlayerBehaviour : MonoBehaviour
         //TODO Some static value?
         animator.SetBool("Moving", true);
 
+        hintBehaviour.DestroyHint();
+
         velocity = transform.forward * speed;
         runningCommand = true;
 
@@ -201,6 +203,39 @@ public class PlayerBehaviour : MonoBehaviour
         animator.SetBool("Moving", false);
         hintBehaviour.DestroyHint();
         hintBehaviour.DisplayCircle(transform.position, colour);
+    }
+
+    public void BounceIntoDirection(Vector3 direction)
+    {
+        CancelAndClearCommands();
+
+        // perpendicular to bounce direction
+        //var spreadVector = direction;
+        //spreadVector.x = (int)Mathf.Abs(spreadVector.x);
+        //spreadVector.z = (int)Mathf.Abs(spreadVector.z);
+        //spreadVector.y = spreadVector.x;
+        //spreadVector.x = spreadVector.z;
+        //spreadVector.z = spreadVector.y;
+
+        var length = Random.Range(1, 3);
+        //var spread = Random.Range(-2, 2);
+        //spread = 0;
+
+        var landing = direction * length/* + spreadVector * spread*/;
+        grid.TrySnapToGrid(transform.position + landing, out landing);
+
+
+        lerpBounce = new LerpHelper<Vector3>(
+            transform.position,
+            landing,
+            Vector3.Lerp,
+            speed * 3,
+            Vector3.Distance(landing, transform.position));
+        velocity = (landing - transform.position).normalized;
+
+        animator.SetBool("Bouncing", true);
+        hintBehaviour.DestroyHint();
+        runningCommand = true;
     }
 
     void StopBounce()
@@ -231,6 +266,8 @@ public class PlayerBehaviour : MonoBehaviour
         lerpRotation = new LerpHelper<Quaternion>(transform.localRotation, transform.localRotation * Quaternion.Euler(0, 90 * quarter, 0), Quaternion.Lerp, rotationspeed, quarter);
         animator.SetBool("Moving", true);
 
+        hintBehaviour.DestroyHint();
+
         runningCommand = true;
     }
 
@@ -240,6 +277,7 @@ public class PlayerBehaviour : MonoBehaviour
         runningCommand = false;
         velocity = Vector3.zero;
         animator.SetBool("Moving", false);
+
         hintBehaviour.DestroyHint();
         hintBehaviour.DisplayCircle(transform.position, colour);
     }
@@ -250,36 +288,7 @@ public class PlayerBehaviour : MonoBehaviour
         transform.position = grid.SnapToGrid(transform.position);
     }
 
-    public void BounceIntoDirection(Vector3 direction)
-    {
-        CancelAndClearCommands();
 
-        // perpendicular to bounce direction
-        //var spreadVector = direction;
-        //spreadVector.x = (int)Mathf.Abs(spreadVector.x);
-        //spreadVector.z = (int)Mathf.Abs(spreadVector.z);
-        //spreadVector.y = spreadVector.x;
-        //spreadVector.x = spreadVector.z;
-        //spreadVector.z = spreadVector.y;
-
-        var length = Random.Range(1, 3);
-        //var spread = Random.Range(-2, 2);
-        //spread = 0;
-
-        var landing = direction * length/* + spreadVector * spread*/;
-        grid.TrySnapToGrid(transform.position + landing, out landing);
-
-
-        lerpBounce = new LerpHelper<Vector3>(
-            transform.position,
-            landing,
-            Vector3.Lerp,
-            speed * 3,
-            Vector3.Distance(landing, transform.position));
-        velocity = (landing - transform.position).normalized;
-        runningCommand = true;
-        animator.SetBool("Bouncing", true);
-    }
 
     void Die()
     {

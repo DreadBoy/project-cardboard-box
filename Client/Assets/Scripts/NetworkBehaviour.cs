@@ -22,9 +22,12 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
         commandHandler = screen;
         flowHandler = screen;
 
-        client = new NetManager(this, "SomeConnectionKey");
-        client.Start();
-        client.UpdateTime = 15;
+        if (client == null)
+        {
+            client = new NetManager(this, "SomeConnectionKey");
+            client.Start();
+            client.UpdateTime = 15;
+        }
     }
 
     void Update()
@@ -124,7 +127,7 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
     public void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
     {
         if (flowHandler != null)
-            flowHandler.GameLost();
+            flowHandler.ServerDisconnected();
         connected = false;
     }
 

@@ -45,7 +45,7 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
         base.OnEnter(from);
         if (state == State.Uninit)
         {
-            changeState(State.Searching);
+            ChangeState(State.Searching);
             networkBehaviour.StartSearching(this);
         }
     }
@@ -53,7 +53,7 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
     public void JoinGame()
     {
         networkBehaviour.JoinGame(remoteEndPoint);
-        changeState(State.Joined);
+        ChangeState(State.Joined);
     }
 
     public void ReadyGame()
@@ -61,13 +61,13 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
         networkBehaviour.SendColour(PlayerPrefs.GetString(PlayerPreferences.Colour));
         networkBehaviour.SendNickname(PlayerPrefs.GetString(PlayerPreferences.Nickname));
         networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.READY));
-        changeState(State.Ready);
+        ChangeState(State.Ready);
     }
 
     public void NotReadyGame()
     {
         networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.NOTREADY));
-        changeState(State.Joined);
+        ChangeState(State.Joined);
     }
 
     public void GameFound(NetEndPoint remoteEndPoint)
@@ -76,7 +76,7 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
             if (this.remoteEndPoint.Host == remoteEndPoint.Host)
                 return;
         this.remoteEndPoint = remoteEndPoint;
-        changeState(State.Found);
+        ChangeState(State.Found);
     }
 
     public void ReceiveCommand(List<Command> commands)
@@ -86,10 +86,11 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
         {
             networkBehaviour.ChangeHandler((GameMain)transitionTo.FirstOrDefault(s => typeof(GameMain).IsInstanceOfType(s)));
             GoForward(transitionTo.FirstOrDefault(s => typeof(GameMain).IsInstanceOfType(s)));
+            ChangeState(State.Uninit);
         }
     }
 
-    void changeState(State newState)
+    void ChangeState(State newState)
     {
         this.state = newState;
         joinButton.gameObject.SetActive(false);
@@ -113,6 +114,13 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
                 notreadyButton.gameObject.SetActive(true);
                 break;
         }
+    }
+
+    public void ServerDisconnected()
+    {
+        remoteEndPoint = null;
+        ChangeState(State.Searching);
+        networkBehaviour.StartSearching(this);
     }
 
     public void ReceiveChips(List<Chip> chips)
