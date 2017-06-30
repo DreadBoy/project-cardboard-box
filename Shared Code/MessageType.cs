@@ -11,5 +11,7 @@ namespace ProjectCardboardBox
         Command = 0,
         Chip = 1,
         Hint = 2,
+        Colour = 3,
+        Nickname = 4
     }
 }

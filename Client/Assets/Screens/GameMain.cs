@@ -57,10 +57,11 @@ Each command consists of one action, followed by one or more multipliers. Multip
             Destroy(chip.gameObject);
             destinationChips.Remove(chip);
             ReorderChips(destinationChips);
+            SendHint();
             return;
         }
 
-        if (!canMoveToDest(chip))
+        if (!CanMoveToDest(chip))
             return;
 
         var chipNew = Instantiate(chip.gameObject).GetComponent<ChipBehaviour>();
@@ -90,7 +91,7 @@ Each command consists of one action, followed by one or more multipliers. Multip
         }
     }
 
-    public bool canMoveToDest(ChipBehaviour chip)
+    public bool CanMoveToDest(ChipBehaviour chip)
     {
         // We want to insert action and command already have action
         if (chip.chip.type == Chip.Type.Action)
@@ -152,7 +153,7 @@ Each command consists of one action, followed by one or more multipliers. Multip
 
     public void GameLost()
     {
-        Debug.Log("Game lost!");
+        GoForward(transitionTo.FirstOrDefault(s => typeof(GameLobby).IsInstanceOfType(s)));
     }
 
     public void ReceiveCommand(List<Command> commands)

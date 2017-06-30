@@ -64,7 +64,7 @@ public class ChipBehaviour : MonoBehaviour
         }
         if (IsSource && gameMain != null)
         {
-            button.interactable = gameMain.canMoveToDest(this);
+            button.interactable = gameMain.CanMoveToDest(this);
         }
     }
 

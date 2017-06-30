@@ -18,11 +18,7 @@ public class HintBehaviour : MonoBehaviour
         DestroyHint();
         if(hints.Length == 0)
         {
-            var obj = Instantiate(hintCircle);
-            foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
-                renderer.material.color = material.color;
-            obj.transform.position = new Vector3(position.x, 0, position.z);
-            hintObjects.Add(obj);
+            DisplayCircle(position, material);
             return;
         }
         for (int h = 0; h < hints.Length; h++)
@@ -41,6 +37,7 @@ public class HintBehaviour : MonoBehaviour
                     renderer.material = material;
                 obj.transform.position = position;
                 obj.transform.rotation = Quaternion.Euler(0, angle, 0);
+                obj.transform.parent = transform.parent;
                 hintObjects.Add(obj);
             }
             if (hint.type == Action.MOVE)
@@ -56,6 +53,7 @@ public class HintBehaviour : MonoBehaviour
                     foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
                         renderer.material = material;
                     obj.transform.position = pos;
+                    obj.transform.parent = transform.parent;
                     hintObjects.Add(obj);
                 }
                 position = pos;
@@ -69,10 +67,23 @@ public class HintBehaviour : MonoBehaviour
         DestroyHint();
     }
 
+    public void DisplayCircle(Vector3 position, Material material)
+    {
+        DestroyHint();
+        var obj = Instantiate(hintCircle);
+        foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
+            renderer.material.color = material.color;
+        obj.transform.position = new Vector3(position.x, 0, position.z);
+        obj.transform.parent = transform.parent;
+        hintObjects.Add(obj);
+        return;
+    }
+
     public void DestroyHint()
     {
         foreach (var hint in hintObjects)
             Destroy(hint);
+        hintObjects.Clear();
     }
 
 }

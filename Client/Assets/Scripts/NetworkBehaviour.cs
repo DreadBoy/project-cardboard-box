@@ -94,6 +94,28 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
         Debug.Log("Sending hint " + str);
     }
 
+    public void SendColour(string colour)
+    {
+        if (client == null)
+            return;
+        NetDataWriter writer = new NetDataWriter();
+        writer.Put((int)MessageType.Colour);
+        writer.Put(colour);
+        client.SendToAll(writer, SendOptions.ReliableOrdered);
+        Debug.Log("Sending colour " + colour);
+    }
+
+    public void SendNickname(string name)
+    {
+        if (client == null)
+            return;
+        NetDataWriter writer = new NetDataWriter();
+        writer.Put((int)MessageType.Nickname);
+        writer.Put(name);
+        client.SendToAll(writer, SendOptions.ReliableOrdered);
+        Debug.Log("Sending nickname " + name);
+    }
+
     public void OnPeerConnected(NetPeer peer)
     {
         //Debug.Log("[CLIENT] We connected to " + peer.EndPoint);

@@ -159,6 +159,7 @@ public class PlayerBehaviour : MonoBehaviour
     {
         transform.position = position;
         transform.localRotation = Quaternion.Euler(0, 90 * angle, 0);
+        hintBehaviour.DisplayCircle(transform.position, colour);
     }
 
     public void DestroyPlayer()
@@ -198,6 +199,8 @@ public class PlayerBehaviour : MonoBehaviour
         runningCommand = false;
         velocity = Vector3.zero;
         animator.SetBool("Moving", false);
+        hintBehaviour.DestroyHint();
+        hintBehaviour.DisplayCircle(transform.position, colour);
     }
 
     void StopBounce()
@@ -206,6 +209,7 @@ public class PlayerBehaviour : MonoBehaviour
         runningCommand = false;
         velocity = Vector3.zero;
         animator.SetBool("Bouncing", false);
+        hintBehaviour.DisplayCircle(transform.position, colour);
 
         Vector3 pos;
         if (grid.TrySnapToGrid(transform.position, out pos))
@@ -236,6 +240,8 @@ public class PlayerBehaviour : MonoBehaviour
         runningCommand = false;
         velocity = Vector3.zero;
         animator.SetBool("Moving", false);
+        hintBehaviour.DestroyHint();
+        hintBehaviour.DisplayCircle(transform.position, colour);
     }
 
 

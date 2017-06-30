@@ -1,32 +1,34 @@
-﻿using ProjectCardboardBox;
+﻿using LiteNetLib;
+using ProjectCardboardBox;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Testing : MonoBehaviour
 {
 
-    public GameBehaviour game;
-    public UIBehaviour uiBehaviour;
-    public GameUIBehaviour gameUiBehaviour;
     public NetworkBehaviour networkBehaviour;
     public InitNickname initNickname;
 
+    GameLobby lobby;
+    GameMain game;
+    NetEndPoint endpoint;
+
+
     void Start()
     {
-        if (game == null)
-            game = FindObjectOfType<GameBehaviour>();
-        if (uiBehaviour == null)
-            uiBehaviour = FindObjectOfType<UIBehaviour>();
         if (networkBehaviour == null)
             networkBehaviour = FindObjectOfType<NetworkBehaviour>();
-        if (gameUiBehaviour == null)
-            gameUiBehaviour = FindObjectOfType<GameUIBehaviour>();
         if (initNickname == null)
             initNickname = FindObjectOfType<InitNickname>();
 
-        //game.state = GameBehaviour.State.game;
-        //uiBehaviour.ChangeState(game.state);
-        //game.OnCommandReceived(new List<Command>() { new Command(Action.GAMEOVER) });
+        networkBehaviour.StartSearching(lobby);
+
+        endpoint = new NetEndPoint("127.0.0.1", 1337);
+
+        lobby = FindObjectOfType<GameLobby>();
+        game = FindObjectOfType<GameMain>();
+
+        lobby.GameFound(endpoint);
 
         //networkBehaviour.SendCommands(new Command[] { new Command("MOVE:2"), new Command("TURN:2") });
 
@@ -42,15 +44,17 @@ public class Testing : MonoBehaviour
         //});
 
         //initNickname.ExitToLeft();
-        
+
 
     }
     bool done1 = false;
     void Update()
     {
-        if(Time.time > 3 && !done1)
+        if (Time.time > 1 && !done1)
         {
             //initNickname.EnterFromRight();
+            lobby.ReceiveCommand(new List<Command>() { new Command(Action.CONFIRMREADY) });
+            game.ReceiveCommand(new List<Command>() { new Command(Action.YOURTURN) });
             done1 = true;
         }
     }

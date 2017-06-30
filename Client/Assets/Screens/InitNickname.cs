@@ -55,7 +55,10 @@ public class InitNickname : ScreenBehaviour
     public void Confirm()
     {
         if (!string.IsNullOrEmpty(input.text))
+        {
             PlayerPrefs.SetString(PlayerPreferences.Nickname, input.text);
+            FindObjectOfType<NetworkBehaviour>().SendNickname(input.text);
+        }
         GoForward();
     }
 }

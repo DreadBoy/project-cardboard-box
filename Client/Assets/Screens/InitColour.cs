@@ -90,6 +90,7 @@ public class InitColour : ScreenBehaviour
             swatch.Value.GetComponent<Image>().sprite = spriteSwatch;
         selectedSwatch.GetComponent<Image>().sprite = spriteSwatchSelected;
         colourSelected = colour;
+        FindObjectOfType<NetworkBehaviour>().SendColour(colour);
     }
 
     class SwatchClicked
@@ -120,6 +121,7 @@ public class InitColour : ScreenBehaviour
     public void Confirm()
     {
         PlayerPrefs.SetString(PlayerPreferences.Colour, colourSelected);
+        FindObjectOfType<NetworkBehaviour>().SendColour(colourSelected);
         GoForward();
     }
 }

@@ -58,6 +58,8 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
 
     public void ReadyGame()
     {
+        networkBehaviour.SendColour(PlayerPrefs.GetString(PlayerPreferences.Colour));
+        networkBehaviour.SendNickname(PlayerPrefs.GetString(PlayerPreferences.Nickname));
         networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.READY));
         changeState(State.Ready);
     }
