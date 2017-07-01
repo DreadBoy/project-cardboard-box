@@ -78,6 +78,16 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
                 Debug.Log("Got hint " + message);
                 conns.First(c => c.HasPeer(peer)).OnHintReceived(message);
             }
+            else if (type == MessageType.Colour)
+            {
+                var colour = reader.GetString(1000);
+                conns.First(c => c.HasPeer(peer)).OnColourReceived(colour);
+            }
+            else if (type == MessageType.Nickname)
+            {
+                var nickname = reader.GetString(1000);
+                conns.First(c => c.HasPeer(peer)).OnNicknameReceived(nickname);
+            }
         }
     }
 

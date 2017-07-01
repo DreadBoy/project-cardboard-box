@@ -13,8 +13,10 @@ public class ColouredMaterial : Singleton<ColouredMaterial>
     {
         foreach (var colour in Colours.AllColours)
         {
+            BaseMaterial.color = new Color(255f / 255f, 109f / 255f, 182f / 255f);
             var mat = new Material(BaseMaterial);
             mat.color = HexToColor(colour);
+            mat.name = colour;
             materials.Add(colour, mat);
         }
 
@@ -24,7 +26,7 @@ public class ColouredMaterial : Singleton<ColouredMaterial>
 
     public Material BaseMaterial;
 
-    Dictionary<string, Material> materials = new Dictionary<string, Material>();
+    public Dictionary<string, Material> materials = new Dictionary<string, Material>();
     List<string> availableColours = new List<string>();
     System.Random random;
 
@@ -41,8 +43,9 @@ public class ColouredMaterial : Singleton<ColouredMaterial>
     private static Color HexToColor(string colour)
     {
         return new Color(
-            int.Parse(colour.Substring(0, 2), System.Globalization.NumberStyles.HexNumber),
-            int.Parse(colour.Substring(2, 2), System.Globalization.NumberStyles.HexNumber),
-            int.Parse(colour.Substring(4, 2), System.Globalization.NumberStyles.HexNumber));
+            int.Parse(colour.Substring(0, 2), System.Globalization.NumberStyles.HexNumber) / 255f,
+            int.Parse(colour.Substring(2, 2), System.Globalization.NumberStyles.HexNumber) / 255f,
+            int.Parse(colour.Substring(4, 2), System.Globalization.NumberStyles.HexNumber) / 255f,
+            1);
     }
 }

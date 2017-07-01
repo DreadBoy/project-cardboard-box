@@ -147,6 +147,19 @@ public class PlayerBehaviour : MonoBehaviour
         hintBehaviour.DisplayHint(transform.position, angle, grid, hints, colour);
     }
 
+    public void ReceiveColour(string col)
+    {
+        Debug.Log("Received colour " + col);
+        if (ColouredMaterial.Instance.materials.ContainsKey(col))
+            colour = ColouredMaterial.Instance.materials[col];
+    }
+
+    public void ReceiveNickname(string nickname)
+    {
+        Debug.Log("Received nickname " + nickname);
+        name = nickname;
+    }
+
     public void CancelAndClearCommands()
     {
         commandQueue.Clear();

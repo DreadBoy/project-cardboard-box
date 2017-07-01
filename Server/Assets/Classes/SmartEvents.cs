@@ -47,11 +47,11 @@ public class HintArgs : EventArgs
     }
 }
 
-public class changeStateArgs : EventArgs
+public class ChangeStateArgs : EventArgs
 {
     public GameBehaviour.State state;
 
-    public changeStateArgs(GameBehaviour.State state)
+    public ChangeStateArgs(GameBehaviour.State state)
     {
         this.state = state;
     }
@@ -63,6 +63,18 @@ public class EndTurnArgs : EventArgs
 
     public EndTurnArgs(PlayerBehaviour player)
     {
+        this.player = player;
+    }
+}
+
+public class StringArgs : EventArgs
+{
+    public PlayerBehaviour player;
+    public string data;
+
+    public StringArgs(string data, PlayerBehaviour player)
+    {
+        this.data = data;
         this.player = player;
     }
 }

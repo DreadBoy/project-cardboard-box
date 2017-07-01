@@ -24,7 +24,7 @@ public class CameraBehaviour : MonoBehaviour
         FindObjectOfType<GameBehaviour>().changeStateEvent.Event += ChangeStateEvent;
     }
 
-    private void ChangeStateEvent(object sender, changeStateArgs e)
+    private void ChangeStateEvent(object sender, ChangeStateArgs e)
     {
         var index = -1;
         if (e.state == GameBehaviour.State.lobby)

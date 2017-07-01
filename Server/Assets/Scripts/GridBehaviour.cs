@@ -32,7 +32,7 @@ public class GridBehaviour : MonoBehaviour
         CreateGrid();
     }
 
-    private void ChangeStateEvent(object sender, changeStateArgs e)
+    private void ChangeStateEvent(object sender, ChangeStateArgs e)
     {
         if (e.state == GameBehaviour.State.game)
             ShowGrid();

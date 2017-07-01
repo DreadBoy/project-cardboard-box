@@ -26,7 +26,7 @@ public class GameBehaviour : MonoBehaviour
     List<PlayerBehaviour> players = new List<PlayerBehaviour>();
     List<INetworkConnection> connections = new List<INetworkConnection>();
 
-    public SmartEvent<changeStateArgs> changeStateEvent = new SmartEvent<changeStateArgs>();
+    public SmartEvent<ChangeStateArgs> changeStateEvent = new SmartEvent<ChangeStateArgs>();
     public SmartEvent<GridCompiledArgs> gridCompiledEvent = new SmartEvent<GridCompiledArgs>();
     public SmartEvent<EventArgs> firstPlayerConnected = new SmartEvent<EventArgs>();
     public SmartEvent<EventArgs> playing = new SmartEvent<EventArgs>();
@@ -52,7 +52,7 @@ public class GameBehaviour : MonoBehaviour
         //Create players and add them to lobby
         var player = Instantiate(playerPrefab) as PlayerBehaviour;
         player.name = "Player " + players.Count;
-        connection.player = player;
+        connection.Player = player;
         lobby.AddPlayerToLobby(player);
         players.Add(player);
         connections.Add(connection);
@@ -60,6 +60,8 @@ public class GameBehaviour : MonoBehaviour
         //subscribe to player's connection
         connection.CommandReceived.Event += CommandReceived_Event;
         connection.HintReceived.Event += HintReceived_Event;
+        connection.ColourReceived.Event += ColourReceived_Event;
+        connection.NicknameReceived.Event += NicknameReceived_Event;
         player.EndTurn.Event += EndTurnEvent;
 
 		if (players.Count == 1)
@@ -87,6 +89,16 @@ public class GameBehaviour : MonoBehaviour
         e.player.ReceiveHint(e.hint);
     }
 
+    private void ColourReceived_Event(object sender, StringArgs e)
+    {
+        e.player.ReceiveColour(e.data);
+    }
+
+    private void NicknameReceived_Event(object sender, StringArgs e)
+    {
+        e.player.ReceiveNickname(e.data);
+    }
+
     public void PlayerDisconnect(INetworkConnection connection)
     {
         //Abort, abort!
@@ -107,7 +119,7 @@ public class GameBehaviour : MonoBehaviour
         if (players.Count == connections.Count && players.Count == 0)
         {
             state = State.lobby;
-            changeStateEvent.RaiseEvent(new changeStateArgs(state));
+            changeStateEvent.RaiseEvent(new ChangeStateArgs(state));
 			lastPlayerDisconnected.RaiseEvent (new EventArgs ());
         }
     }
@@ -127,14 +139,14 @@ public class GameBehaviour : MonoBehaviour
 
     public void ChangeToState_Ending()
     {
-        connections.First(c => c.player.state != PlayerBehaviour.State.dead).Send(MessageType.Command, new Command(ProjectCardboardBox.Action.VICTORY).ToString());
+        connections.First(c => c.Player.state != PlayerBehaviour.State.dead).Send(MessageType.Command, new Command(ProjectCardboardBox.Action.VICTORY).ToString());
         foreach (var player in players)
         {
             player.state = PlayerBehaviour.State.ending;
             grid.RemovePlayerFromGrid(player);
         }
         state = State.ending;
-        changeStateEvent.RaiseEvent(new changeStateArgs(state));
+        changeStateEvent.RaiseEvent(new ChangeStateArgs(state));
     }
 
     public void ChangeToState_Game()
@@ -146,7 +158,7 @@ public class GameBehaviour : MonoBehaviour
             grid.AddPlayerToGrid(player);
         }
         state = State.game;
-        changeStateEvent.RaiseEvent(new changeStateArgs(state));
+        changeStateEvent.RaiseEvent(new ChangeStateArgs(state));
         foreach (var conn in connections)
         {
             conn.Send(MessageType.Command, new Command(ProjectCardboardBox.Action.CONFIRMREADY).ToString());
@@ -158,6 +170,6 @@ public class GameBehaviour : MonoBehaviour
 
     internal void playerDied(PlayerBehaviour player)
     {
-        connections.First(c => c.player == player).Send(MessageType.Command, new Command(ProjectCardboardBox.Action.GAMEOVER).ToString());
+        connections.First(c => c.Player == player).Send(MessageType.Command, new Command(ProjectCardboardBox.Action.GAMEOVER).ToString());
     }
 }

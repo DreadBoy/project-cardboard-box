@@ -9,22 +9,28 @@ public interface INetworkConnection
 {
     SmartEvent<CommandArgs> CommandReceived { get; set; }
     SmartEvent<HintArgs> HintReceived { get; set; }
-    PlayerBehaviour player { get; set; }
+    SmartEvent<StringArgs> ColourReceived { get; set; }
+    SmartEvent<StringArgs> NicknameReceived { get; set; }
+    PlayerBehaviour Player { get; set; }
     void Send(MessageType type, string message);
 }
 
 public class SmartConnection : INetworkConnection
 {
-    public NetPeer peer { get; set; }
+    public NetPeer Peer { get; set; }
     public SmartEvent<CommandArgs> CommandReceived { get; set; }
     public SmartEvent<HintArgs> HintReceived { get; set; }
-    public PlayerBehaviour player { get; set; }
+    public SmartEvent<StringArgs> ColourReceived { get; set; }
+    public SmartEvent<StringArgs> NicknameReceived { get; set; }
+    public PlayerBehaviour Player { get; set; }
 
     public SmartConnection(NetPeer peer)
     {
         CommandReceived = new SmartEvent<CommandArgs>();
         HintReceived = new SmartEvent<HintArgs>();
-        this.peer = peer;
+        ColourReceived = new SmartEvent<StringArgs>();
+        NicknameReceived = new SmartEvent<StringArgs>();
+        this.Peer = peer;
     }
 
     public void Send(MessageType type, string message)
@@ -33,12 +39,12 @@ public class SmartConnection : INetworkConnection
         writer.Put((int)type);
         writer.Put(message);
         Debug.Log("Sending " + message);
-        peer.Send(writer, SendOptions.ReliableOrdered);
+        Peer.Send(writer, SendOptions.ReliableOrdered);
     }
 
     public bool HasPeer(NetPeer peer)
     {
-        return peer == this.peer;
+        return peer == this.Peer;
     }
 
     public void OnMessageReceived(string message)
@@ -47,13 +53,23 @@ public class SmartConnection : INetworkConnection
         var commands = messages.Select(p => new Command(p)).ToArray();
         foreach (var command in commands)
         {
-            CommandReceived.RaiseEvent(new CommandArgs(command, player));
+            CommandReceived.RaiseEvent(new CommandArgs(command, Player));
         }
     }
 
     public void OnHintReceived(string hint)
     {
-        HintReceived.RaiseEvent(new HintArgs(hint, player));
+        HintReceived.RaiseEvent(new HintArgs(hint, Player));
+    }
+
+    public void OnColourReceived(string colour)
+    {
+        ColourReceived.RaiseEvent(new StringArgs(colour, Player));
+    }
+
+    public void OnNicknameReceived(string nickname)
+    {
+        NicknameReceived.RaiseEvent(new StringArgs(nickname, Player));
     }
 }
 
@@ -61,12 +77,16 @@ public class MockConnection : INetworkConnection
 {
     public SmartEvent<CommandArgs> CommandReceived { get; set; }
     public SmartEvent<HintArgs> HintReceived { get; set; }
-    public PlayerBehaviour player { get; set; }
+    public SmartEvent<StringArgs> ColourReceived { get; set; }
+    public SmartEvent<StringArgs> NicknameReceived { get; set; }
+    public PlayerBehaviour Player { get; set; }
 
     public MockConnection()
     {
         CommandReceived = new SmartEvent<CommandArgs>();
         HintReceived = new SmartEvent<HintArgs>();
+        ColourReceived = new SmartEvent<StringArgs>();
+        NicknameReceived = new SmartEvent<StringArgs>();
     }
 
     public void Send(MessageType type, string message)
