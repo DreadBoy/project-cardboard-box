@@ -35,6 +35,7 @@ class LobbyBehaviour : MonoBehaviour
         {
             players[i].transform.localPosition = playerPositions[i];
             players[i].transform.localRotation = playerRotations[i];
+            player.SpawnedInLobby();
         }
     }
 

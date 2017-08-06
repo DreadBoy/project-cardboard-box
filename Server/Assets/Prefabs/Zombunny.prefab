@@ -41,6 +41,7 @@ GameObject:
   - component: {fileID: 65624215822867348}
   - component: {fileID: 54433630919358972}
   - component: {fileID: 114853029688422048}
+  - component: {fileID: 114508419320564650}
   m_Layer: 0
   m_Name: Zombunny
   m_TagString: Untagged
@@ -130,6 +131,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 155390980336e1f4c9c8790fb77408d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114508419320564650
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1744344280202138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba825bf0453d024090b161fed773db2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nicknamePrefab: {fileID: 223238780531873754, guid: 6aeee78270dae5b498c4102c85df2de1,
+    type: 2}
+  positions:
+  - {x: -0.77, y: 4.5, z: -2.94}
+  - {x: -0.77, y: 32.4, z: -18.9}
+  rotations:
+  - {x: 8.4, y: 0, z: 0}
+  - {x: 70, y: 0, z: 0}
 --- !u!114 &114797616299847488
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -143,6 +163,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   game: {fileID: 0}
   grid: {fileID: 0}
+  DeathFire: {fileID: 1824873091481976, guid: 2bf102375de08e14c980c2ed79c42c80, type: 2}
   state: 0
   animator: {fileID: 0}
   velocity: {x: 0, y: 0, z: 0}
@@ -159,6 +180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hintArrow: {fileID: 1633505786073846, guid: 55fc660fd85e3ac4b837ef2969ac409a, type: 2}
   hintPath: {fileID: 1825782381152348, guid: e0f7e11bf6891304e9aae8284ad0becb, type: 2}
+  hintCircle: {fileID: 0}
 --- !u!137 &137612861821735618
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

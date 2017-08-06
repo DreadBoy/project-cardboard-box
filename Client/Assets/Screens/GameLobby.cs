@@ -54,6 +54,8 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
     {
         networkBehaviour.JoinGame(remoteEndPoint);
         ChangeState(State.Joined);
+        networkBehaviour.SendColour(PlayerPrefs.GetString(PlayerPreferences.Colour));
+        networkBehaviour.SendNickname(PlayerPrefs.GetString(PlayerPreferences.Nickname));
     }
 
     public void ReadyGame()

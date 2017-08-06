@@ -12,11 +12,19 @@ public class HintBehaviour : MonoBehaviour
     List<GameObject> hintObjects = new List<GameObject>();
     Vector3[] directions = new Vector3[] { Vector3.forward, Vector3.right, Vector3.back, Vector3.left };
 
+    public void UpdateColour(Material material)
+    {
+        foreach (var hint in hintObjects)
+        {
+            foreach (var renderer in hint.GetComponentsInChildren<MeshRenderer>())
+                renderer.material.color = material.color;
+        }
+    }
 
     public void DisplayHint(Vector3 position, float angle, GridBehaviour grid, Command[] hints, Material material)
     {
         DestroyHint();
-        if(hints.Length == 0)
+        if (hints.Length == 0)
         {
             DisplayCircle(position, material);
             return;
@@ -34,7 +42,7 @@ public class HintBehaviour : MonoBehaviour
 
                 var obj = Instantiate(hintArrow);
                 foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
-                    renderer.material = material;
+                    renderer.material.color = material.color;
                 obj.transform.position = position;
                 obj.transform.rotation = Quaternion.Euler(0, angle, 0);
                 obj.transform.parent = transform.parent;
@@ -51,7 +59,7 @@ public class HintBehaviour : MonoBehaviour
                     pos = grid.SnapToGrid(pos);
                     var obj = Instantiate(hintPath);
                     foreach (var renderer in obj.GetComponentsInChildren<MeshRenderer>())
-                        renderer.material = material;
+                        renderer.material.color = material.color;
                     obj.transform.position = pos;
                     obj.transform.parent = transform.parent;
                     hintObjects.Add(obj);

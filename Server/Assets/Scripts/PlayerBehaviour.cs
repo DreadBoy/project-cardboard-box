@@ -1,4 +1,5 @@
 ﻿using ProjectCardboardBox;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,7 +9,10 @@ public class PlayerBehaviour : MonoBehaviour
 {
     public GameBehaviour game;
     public GridBehaviour grid;
+    public PodiumBehaviour podium;
     HintBehaviour hintBehaviour;
+    NicknameBehaviour nicknameBehaviour;
+    public GameObject DeathFire;
 
     float speed = 3.5f;
     float rotationspeed = 1.5f;
@@ -51,7 +55,9 @@ public class PlayerBehaviour : MonoBehaviour
     {
         grid = FindObjectOfType<GridBehaviour>();
         game = FindObjectOfType<GameBehaviour>();
+        podium = FindObjectOfType<PodiumBehaviour>();
         hintBehaviour = GetComponent<HintBehaviour>();
+        nicknameBehaviour = GetComponent<NicknameBehaviour>();
         if (animator == null)
         {
             animator = GetComponent<Animator>();
@@ -78,6 +84,7 @@ public class PlayerBehaviour : MonoBehaviour
             {
                 lerpBounce.Update(Time.deltaTime);
                 transform.position = lerpBounce.Lerp();
+                nicknameBehaviour.UpdatePosition(transform.position, this);
                 if (lerpBounce.IsDone())
                     StopBounce();
             }
@@ -85,6 +92,7 @@ public class PlayerBehaviour : MonoBehaviour
             if (distance > 0)
             {
                 transform.position += transform.forward * Time.deltaTime * speed;
+                nicknameBehaviour.UpdatePosition(transform.position, this);
                 distance -= Time.deltaTime * speed;
                 if (distance <= 0)
                 {
@@ -151,13 +159,18 @@ public class PlayerBehaviour : MonoBehaviour
     {
         Debug.Log("Received colour " + col);
         if (ColouredMaterial.Instance.materials.ContainsKey(col))
+        {
             colour = ColouredMaterial.Instance.materials[col];
+            hintBehaviour.UpdateColour(colour);
+        }
     }
 
     public void ReceiveNickname(string nickname)
     {
         Debug.Log("Received nickname " + nickname);
-        name = nickname;
+        gameObject.name = nickname;
+        nicknameBehaviour.UpdatePosition(transform.position, this);
+        nicknameBehaviour.UpdateNickname(nickname);
     }
 
     public void CancelAndClearCommands()
@@ -167,12 +180,17 @@ public class PlayerBehaviour : MonoBehaviour
         StopRotating();
     }
 
+    public void SpawnedInLobby()
+    {
+        hintBehaviour.DisplayCircle(transform.position, colour);
+    }
 
     public void SpawnPlayer(Vector3 position)
     {
         transform.position = position;
         transform.localRotation = Quaternion.Euler(0, 90 * angle, 0);
         hintBehaviour.DisplayCircle(transform.position, colour);
+        nicknameBehaviour.UpdatePosition(transform.position, this);
     }
 
     public void DestroyPlayer()
@@ -301,12 +319,47 @@ public class PlayerBehaviour : MonoBehaviour
         transform.position = grid.SnapToGrid(transform.position);
     }
 
-
-
     void Die()
     {
         animator.SetTrigger("Dead");
         state = State.dead;
-        game.playerDied(this);
+        game.PlayerDied(this);
+        if (DeathFire == null)
+            Debug.LogError("You forgot to assign death fire");
+        else
+        {
+            var fire = Instantiate(DeathFire);
+            fire.transform.SetParent(transform.parent);
+            fire.transform.position = transform.position;
+            StartCoroutine(RemoveFireAfterDelay(4, fire));
+        }
+        StartCoroutine(RemovePlayerFromBoardAfterDelay(3));
+    }
+
+    IEnumerator RemovePlayerFromBoardAfterDelay(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        state = State.ending;
+        grid.RemovePlayerFromGrid(this);
+        podium.AddPlayerToPodium(this);
+
+        hintBehaviour.DestroyHint();
+        nicknameBehaviour.UpdatePosition(transform.position, this);
+    }
+
+    IEnumerator RemoveFireAfterDelay(float time, GameObject fire)
+    {
+        yield return new WaitForSeconds(time);
+        Destroy(fire);
+    }
+
+    public void YouWon()
+    {
+        state = State.ending;
+        grid.RemovePlayerFromGrid(this);
+        podium.AddPlayerToPodium(this, true);
+        hintBehaviour.DestroyHint();
+        nicknameBehaviour.UpdatePosition(transform.position, this);
     }
 }

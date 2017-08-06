@@ -51,11 +51,12 @@ public class GameBehaviour : MonoBehaviour
 
         //Create players and add them to lobby
         var player = Instantiate(playerPrefab) as PlayerBehaviour;
-        player.name = "Player " + players.Count;
         connection.Player = player;
         lobby.AddPlayerToLobby(player);
         players.Add(player);
         connections.Add(connection);
+        player.name = "Player " + players.Count;
+        player.ReceiveNickname("Player " + players.Count);
 
         //subscribe to player's connection
         connection.CommandReceived.Event += CommandReceived_Event;
@@ -131,7 +132,7 @@ public class GameBehaviour : MonoBehaviour
             ChangeToState_Game();
             playing.RaiseEvent(new EventArgs());
         }
-        if (state == State.game && players.Count > 1 && players.Count(pl => pl.state != PlayerBehaviour.State.dead) == 1)
+        if (state == State.game && players.Count > 1 && players.Count(pl => pl.state != PlayerBehaviour.State.ending) == 1)
         {
             ChangeToState_Ending();
         }
@@ -139,12 +140,8 @@ public class GameBehaviour : MonoBehaviour
 
     public void ChangeToState_Ending()
     {
-        connections.First(c => c.Player.state != PlayerBehaviour.State.dead).Send(MessageType.Command, new Command(ProjectCardboardBox.Action.VICTORY).ToString());
-        foreach (var player in players)
-        {
-            player.state = PlayerBehaviour.State.ending;
-            grid.RemovePlayerFromGrid(player);
-        }
+        connections.First(c => c.Player.state != PlayerBehaviour.State.ending).Send(MessageType.Command, new Command(ProjectCardboardBox.Action.VICTORY).ToString());
+        connections.First(c => c.Player.state != PlayerBehaviour.State.ending).Player.YouWon();
         state = State.ending;
         changeStateEvent.RaiseEvent(new ChangeStateArgs(state));
     }
@@ -168,7 +165,7 @@ public class GameBehaviour : MonoBehaviour
 
     }
 
-    internal void playerDied(PlayerBehaviour player)
+    internal void PlayerDied(PlayerBehaviour player)
     {
         connections.First(c => c.Player == player).Send(MessageType.Command, new Command(ProjectCardboardBox.Action.GAMEOVER).ToString());
     }

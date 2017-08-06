@@ -10,13 +10,13 @@ class Testing : MonoBehaviour
     GridBehaviour grid;
     MockConnection conn1 = new MockConnection();
     MockConnection conn2 = new MockConnection();
-
-    NetManager client;
+    MockConnection conn3 = new MockConnection();
 
     List<Vector2> spawnPoints = new List<Vector2>()
     {
-        //new Vector2(5, 2),
-        new Vector2(6, 6)
+        new Vector2(6, 8),
+        new Vector2(6, 9),
+        new Vector2(5, 5),
     };
 
     void Start()
@@ -28,26 +28,6 @@ class Testing : MonoBehaviour
         grid.GetComponent<PlayerSpawnerMock>().enabled = true;
 
         grid.GetComponent<PlayerSpawnerMock>().spawnPoints = new List<Vector2>(spawnPoints);
-
-        //game.PlayerConnect(conn2);
-
-        //EventBasedNetListener listener = new EventBasedNetListener();
-        //client = new NetManager(listener, "SomeConnectionKey");
-        //client.Start();
-        ////client.Connect("localhost" /* host ip or name */, 9050 /* port */);
-        //listener.NetworkReceiveEvent += (fromPeer, dataReader) =>
-        //{
-        //    Debug.Log("[TESTING] We got: " + dataReader.GetString(100 /* max length of string */));
-        //};
-
-        //listener.NetworkReceiveUnconnectedEvent += (NetEndPoint remoteEndPoint, LiteNetLib.Utils.NetDataReader reader, UnconnectedMessageType messageType) =>
-        //{
-        //    Debug.Log(string.Format("[TESTING] ReceiveUnconnected {0}. From: {1}. Data: {2}", messageType, remoteEndPoint, reader.GetString(100)));
-        //    if (messageType == UnconnectedMessageType.DiscoveryResponse)
-        //    {
-        //        client.Connect(remoteEndPoint);
-        //    }
-        //};
     }
 
     float time;
@@ -57,27 +37,33 @@ class Testing : MonoBehaviour
     void Update()
     {
         time += Time.deltaTime;
-        //client.PollEvents();
-        if (time > 1f && !triggered2)
+        if (time > 0.5f && !triggered2)
         {
             triggered2 = true;
 
-			//game.PlayerConnect(conn1);
-   //         conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.player));
+            game.PlayerConnect(conn1);
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.Player));
 
-            //NetDataWriter writer = new NetDataWriter();
-            //writer.Put("CLIENT 1 DISCOVERY REQUEST");
-            //client.SendDiscoveryRequest(writer, 9050);
+            game.PlayerConnect(conn2);
+            conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn2.Player));
+
+            //game.PlayerConnect(conn3);
+            //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn3.Player));
         }
-        if (time > 4f && !triggered1)
+        if (time > 1f && !triggered1)
         {
             triggered1 = true;
 
 
-            //conn1.HintReceived.RaiseEvent(new HintArgs("", conn1.player));
-            //conn1.HintReceived.RaiseEvent(new HintArgs("TURN:1|TURN:1|MOVE:5", conn1.player));
-            //conn1.HintReceived.RaiseEvent(new HintArgs("", conn1.player));
+            conn1.HintReceived.RaiseEvent(new HintArgs("TURN:1|TURN:1|MOVE:5", conn1.Player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 5), conn1.Player));
 
+            conn1.NicknameReceived.RaiseEvent(new StringArgs("Matic Leva", conn1.Player));
+
+            //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 1), conn3.Player));
+            //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 1), conn3.Player));
+            //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 3), conn3.Player));
+            //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn3.Player));
 
             //var free = grid.IsSpotFree((int)spawnPoints[0].x, (int)spawnPoints[0].y);
 

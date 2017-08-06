@@ -8,12 +8,14 @@ public class CameraBehaviour : MonoBehaviour
     public List<Vector3> positions = new List<Vector3>()
     {
         new Vector3(-0.77f, 4.5f, -2.94f),
-        new Vector3(-0.77f,32.4f, -18.9f)
+        new Vector3(-0.77f, 32.4f, -18.9f),
+        new Vector3(-0.77f, 11.9f, -38.1f),
     };
     public List<Vector3> rotations = new List<Vector3>()
     {
         new Vector3(8.4f, 0, 0),
-        new Vector3(70, 0, 0)
+        new Vector3(70, 0, 0),
+        new Vector3(28.744f, 0, 0),
     };
 
     LerpHelper<Vector3> lerpPosition = null;
@@ -32,7 +34,7 @@ public class CameraBehaviour : MonoBehaviour
         if (e.state == GameBehaviour.State.game)
             index = 1;
         if (e.state == GameBehaviour.State.ending)
-            index = 0;
+            index = 2;
 
         if (index > -1)
         {
