@@ -13,6 +13,7 @@ public class GameBehaviour : MonoBehaviour
 
     LobbyBehaviour lobby;
     GridBehaviour grid;
+    NetworkBehaviour networkBehaviour;
 
 
     public enum State
@@ -38,6 +39,7 @@ public class GameBehaviour : MonoBehaviour
     {
         lobby = FindObjectOfType<LobbyBehaviour>();
         grid = FindObjectOfType<GridBehaviour>();
+        networkBehaviour = FindObjectOfType<NetworkBehaviour>();
     }
 
     public bool PlayerConnect(INetworkConnection connection)
@@ -82,6 +84,11 @@ public class GameBehaviour : MonoBehaviour
 
     private void CommandReceived_Event(object sender, CommandArgs e)
     {
+        if(e.command.type == ProjectCardboardBox.Action.NEWGAME)
+        {
+            ChangeToState_Game();
+            return;
+        }
         e.player.ReceiveCommand(e.command);
     }
 
@@ -144,6 +151,15 @@ public class GameBehaviour : MonoBehaviour
         connections.First(c => c.Player.state != PlayerBehaviour.State.ending).Player.YouWon();
         state = State.ending;
         changeStateEvent.RaiseEvent(new ChangeStateArgs(state));
+    }
+
+    public void ChangeToState_NewGame()
+    {
+        networkBehaviour.DropAllConnections();
+        foreach (var player in players)
+            grid.RemovePlayerFromGrid(player);
+        players.Clear();
+        connections.Clear();
     }
 
     public void ChangeToState_Game()

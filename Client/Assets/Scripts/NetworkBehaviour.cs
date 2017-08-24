@@ -11,7 +11,7 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
     private bool connected;
 
     ICommandHandler commandHandler;
-    IFlowHandler flowHandler;
+    public IFlowHandler flowHandler;
 
     void Start()
     {

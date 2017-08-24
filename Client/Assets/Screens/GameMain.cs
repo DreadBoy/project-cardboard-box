@@ -162,6 +162,16 @@ Each command consists of one action, followed by one or more multipliers. Multip
                 sendButton.YourTurn();
                 hint.text = hints[1];
             }
+            else if (command.type == ProjectCardboardBox.Action.GAMEOVER)
+            {
+                networkBehaviour.ChangeHandler((OverLoss)transitionTo.FirstOrDefault(s => typeof(OverLoss).IsInstanceOfType(s)));
+                GoForward(transitionTo.FirstOrDefault(s => typeof(OverLoss).IsInstanceOfType(s)));
+            }
+            else if (command.type == ProjectCardboardBox.Action.VICTORY)
+            {
+                networkBehaviour.ChangeHandler((OverVictory)transitionTo.FirstOrDefault(s => typeof(OverVictory).IsInstanceOfType(s)));
+                GoForward(transitionTo.FirstOrDefault(s => typeof(OverVictory).IsInstanceOfType(s)));
+            }
         }
     }
 
@@ -177,7 +187,7 @@ Each command consists of one action, followed by one or more multipliers. Multip
                 sendButton.WaitingForTurn();
                 hint.text = hints[0];
                 networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.MOVE, 0));
-            }
+            }   
         }
         else
             timeCounter.text = "";

@@ -4,6 +4,7 @@ using ProjectCardboardBox;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using System;
 
 public interface INetworkConnection
 {
@@ -13,6 +14,7 @@ public interface INetworkConnection
     SmartEvent<StringArgs> NicknameReceived { get; set; }
     PlayerBehaviour Player { get; set; }
     void Send(MessageType type, string message);
+    void DropConnection(NetManager server);
 }
 
 public class SmartConnection : INetworkConnection
@@ -40,6 +42,11 @@ public class SmartConnection : INetworkConnection
         writer.Put(message);
         Debug.Log("Sending " + message);
         Peer.Send(writer, SendOptions.ReliableOrdered);
+    }
+
+    public void DropConnection(NetManager server)
+    {
+        server.DisconnectPeer(Peer);
     }
 
     public bool HasPeer(NetPeer peer)
@@ -92,5 +99,10 @@ public class MockConnection : INetworkConnection
     public void Send(MessageType type, string message)
     {
         Debug.Log("(Mock connection) Sending network message " + type.ToString() + ": " + message.ToString());
+    }
+
+    public void DropConnection(NetManager server)
+    {
+        Debug.Log("(Mock connection) Dropping connection");
     }
 }

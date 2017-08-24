@@ -36,6 +36,13 @@ public class NetworkBehaviour : MonoBehaviour, INetEventListener
             server.Stop();
     }
 
+    public void DropAllConnections()
+    {
+        foreach (var conn in conns)
+            conn.DropConnection(server);
+        conns.Clear();
+    }
+
     public void OnPeerConnected(NetPeer peer)
     {
         var sconn = new SmartConnection(peer);

@@ -1,5 +1,7 @@
 ﻿using ProjectCardboardBox;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(RectTransform))]
@@ -123,6 +125,12 @@ public class ScreenBehaviour : MonoBehaviour
         nextScreen.transitionedFrom = this;
         nextScreen.EnterFromRight();
         OnLeave(nextScreen);
+    }
+
+    public void GoForward(Type screen)
+    {
+        var nextScreen = transitionTo.FirstOrDefault(s => s.GetType() == screen);
+        GoForward(nextScreen);
     }
 
     public void GoForwardImmediately(ScreenBehaviour nextScreen)

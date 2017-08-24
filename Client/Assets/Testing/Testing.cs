@@ -48,6 +48,7 @@ public class Testing : MonoBehaviour
 
     }
     bool done1 = false;
+    bool done2 = false;
     void Update()
     {
         if (Time.time > 1 && !done1)
@@ -55,7 +56,13 @@ public class Testing : MonoBehaviour
             //initNickname.EnterFromRight();
             lobby.ReceiveCommand(new List<Command>() { new Command(Action.CONFIRMREADY) });
             game.ReceiveCommand(new List<Command>() { new Command(Action.YOURTURN) });
+            game.ReceiveCommand(new List<Command>() { new Command(Action.VICTORY) });
             done1 = true;
+        }
+        if (Time.time > 2 && !done2)
+        {
+            networkBehaviour.flowHandler.ServerDisconnected();
+            done2 = true;
         }
     }
 }
