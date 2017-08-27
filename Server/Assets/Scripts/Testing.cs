@@ -19,6 +19,8 @@ class Testing : MonoBehaviour
         new Vector2(5, 5),
     };
 
+    List<DoAfterTimeout> events = new List<DoAfterTimeout>();
+
     void Start()
     {
         game = FindObjectOfType<GameBehaviour>();
@@ -28,50 +30,49 @@ class Testing : MonoBehaviour
         grid.GetComponent<PlayerSpawnerMock>().enabled = true;
 
         grid.GetComponent<PlayerSpawnerMock>().spawnPoints = new List<Vector2>(spawnPoints);
-    }
 
-    float time;
-    bool triggered1 = false;
-    bool triggered2 = false;
+        events.Add(new DoAfterTimeout(0.5f, () =>
+        {
+            game.PlayerConnect(conn1);
+            game.PlayerConnect(conn2);
+            conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn2.Player));
+        }));
+
+        events.Add(new DoAfterTimeout(3, () =>
+        {
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.Player));
+        }));
+
+        events.Add(new DoAfterTimeout(3.5f, () =>
+        {
+            conn1.HintReceived.RaiseEvent(new HintArgs("TURN:2|MOVE:5", conn1.Player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn1.Player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 5), conn1.Player));
+        }));
+    }
 
     void Update()
     {
-        time += Time.deltaTime;
-        if (time > 0.5f && !triggered2)
+        foreach (var ev in events)
         {
-            triggered2 = true;
-
-            game.PlayerConnect(conn1);
-            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.Player));
-
-            game.PlayerConnect(conn2);
-            conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn2.Player));
-
-            //game.PlayerConnect(conn3);
-            //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn3.Player));
+            ev.Update(Time.deltaTime);
         }
-        if (time > 1f && !triggered1)
-        {
-            triggered1 = true;
 
+        //conn1.HintReceived.RaiseEvent(new HintArgs("TURN:1|TURN:1|MOVE:5", conn1.Player));
+        //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 5), conn1.Player));
 
-            conn1.HintReceived.RaiseEvent(new HintArgs("TURN:1|TURN:1|MOVE:5", conn1.Player));
-            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 5), conn1.Player));
+        //conn1.NicknameReceived.RaiseEvent(new StringArgs("Matic Leva", conn1.Player));
+        //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 1), conn3.Player));
+        //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 1), conn3.Player));
+        //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 3), conn3.Player));
+        //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn3.Player));
 
-            conn1.NicknameReceived.RaiseEvent(new StringArgs("Matic Leva", conn1.Player));
+        //var free = grid.IsSpotFree((int)spawnPoints[0].x, (int)spawnPoints[0].y);
 
-            //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 1), conn3.Player));
-            //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 1), conn3.Player));
-            //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 3), conn3.Player));
-            //conn3.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn3.Player));
+        //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn1.player));
+        //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn1.player));
 
-            //var free = grid.IsSpotFree((int)spawnPoints[0].x, (int)spawnPoints[0].y);
-
-            //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn1.player));
-            //conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn1.player));
-
-            //conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn2.player));
-            //conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn2.player));
-        }
+        //conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn2.player));
+        //conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 10), conn2.player));
     }
 }

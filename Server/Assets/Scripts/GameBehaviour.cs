@@ -65,21 +65,11 @@ public class GameBehaviour : MonoBehaviour
         connection.HintReceived.Event += HintReceived_Event;
         connection.ColourReceived.Event += ColourReceived_Event;
         connection.NicknameReceived.Event += NicknameReceived_Event;
-        player.EndTurn.Event += EndTurnEvent;
 
 		if (players.Count == 1)
 			firstPlayerConnected.RaiseEvent (new EventArgs ());
 
         return player;
-    }
-
-    private void EndTurnEvent(object sender, EndTurnArgs e)
-    {
-        var index = players.IndexOf(e.player);
-        index++;
-        if (index >= connections.Count)
-            index = 0;
-        connections[index].Send(MessageType.Command, new Command(ProjectCardboardBox.Action.YOURTURN).ToString());
     }
 
     private void CommandReceived_Event(object sender, CommandArgs e)
@@ -88,6 +78,14 @@ public class GameBehaviour : MonoBehaviour
         {
             ChangeToState_Game();
             return;
+        }
+        else if(e.command.type == ProjectCardboardBox.Action.ENDTURN)
+        {
+            var index = players.IndexOf(e.player);
+            index++;
+            if (index >= connections.Count)
+                index = 0;
+            connections[index].Send(MessageType.Command, new Command(ProjectCardboardBox.Action.YOURTURN).ToString());
         }
         e.player.ReceiveCommand(e.command);
     }

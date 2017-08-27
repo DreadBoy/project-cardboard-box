@@ -7,7 +7,8 @@ namespace ProjectCardboardBox
 {
     public enum Action
     {
-        NEWGAME = -8,
+        NEWGAME = -9,
+        ENDTURN = -8,
         YOURTURN = -7,
         VICTORY = -6,
         GAMEOVER = -5,

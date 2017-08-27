@@ -148,6 +148,7 @@ Each command consists of one action, followed by one or more multipliers. Multip
             networkBehaviour.SendCommands(commands.ToArray());
             DestroyChips(destinationChips);
             destinationChips.Clear();
+            FinishTurn();
         }
     }
 
@@ -183,14 +184,19 @@ Each command consists of one action, followed by one or more multipliers. Multip
             timeCounter.text = timeCount + Math.Floor(11 + yourTurnStart - Time.time);
             if (yourTurnStart + 11 < Time.time)
             {
-                yourTurnStart = -1;
-                sendButton.WaitingForTurn();
-                hint.text = hints[0];
-                networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.MOVE, 0));
+                FinishTurn();
             }   
         }
         else
             timeCounter.text = "";
+    }
+
+    void FinishTurn()
+    {
+        yourTurnStart = -1;
+        sendButton.WaitingForTurn();
+        hint.text = hints[0];
+        networkBehaviour.SendCommand(new Command(ProjectCardboardBox.Action.ENDTURN));
     }
 
     public void GameLost()

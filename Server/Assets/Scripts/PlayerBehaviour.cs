@@ -44,8 +44,6 @@ public class PlayerBehaviour : MonoBehaviour
     LerpHelper<Quaternion> lerpRotation = null;
     LerpHelper<Vector3> lerpBounce = null;
 
-    public SmartEvent<EndTurnArgs> EndTurn = new SmartEvent<EndTurnArgs>();
-
     public Animator animator;
     public Vector3 velocity = Vector3.zero;
 
@@ -98,8 +96,6 @@ public class PlayerBehaviour : MonoBehaviour
                 {
                     StopMoving();
                     SnapToGrid();
-                    if (commandQueue.Count == 0)
-                        EndTurn.RaiseEvent(new EndTurnArgs(this));
                 }
             }
 
@@ -110,8 +106,6 @@ public class PlayerBehaviour : MonoBehaviour
                 if (lerpRotation.IsDone())
                 {
                     StopRotating();
-                    if (commandQueue.Count == 0)
-                        EndTurn.RaiseEvent(new EndTurnArgs(this));
                 }
             }
         }
