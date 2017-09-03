@@ -3,7 +3,7 @@
 - [ ] Back button doesn't close the application
 - [ ] Text "Skip" looks very much like "Ship"
 - [ ] Some devices have messed up UI. Join button was invisible (but operational) and buttons for assembled command were smaller
-- [ ] If you assemble command during waiting, it is not rechecked when it's your turn
+- [x] If you assemble command during waiting, it is not rechecked when it's your turn
 
 ## Planned features
 - [x] When player dies or server closes, client should change screen and display "game over" screen

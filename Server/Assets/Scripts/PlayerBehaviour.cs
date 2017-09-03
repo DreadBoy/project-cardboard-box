@@ -144,14 +144,12 @@ public class PlayerBehaviour : MonoBehaviour
 
     public void ReceiveHint(string hint)
     {
-        Debug.Log("Received hint " + hint);
         var hints = hint.Split(new[] { '|' }, System.StringSplitOptions.RemoveEmptyEntries).Select(s => new Command(s)).ToArray();
         hintBehaviour.DisplayHint(transform.position, angle, grid, hints, colour);
     }
 
     public void ReceiveColour(string col)
     {
-        Debug.Log("Received colour " + col);
         if (ColouredMaterial.Instance.materials.ContainsKey(col))
         {
             colour = ColouredMaterial.Instance.materials[col];
@@ -161,7 +159,6 @@ public class PlayerBehaviour : MonoBehaviour
 
     public void ReceiveNickname(string nickname)
     {
-        Debug.Log("Received nickname " + nickname);
         gameObject.name = nickname;
         nicknameBehaviour.UpdatePosition(transform.position, this);
         nicknameBehaviour.UpdateNickname(nickname);
