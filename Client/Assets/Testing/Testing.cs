@@ -13,6 +13,7 @@ public class Testing : MonoBehaviour
     GameMain game;
     NetEndPoint endpoint;
 
+    List<DoAfterTimeout> events = new List<DoAfterTimeout>();
 
     void Start()
     {
@@ -45,24 +46,25 @@ public class Testing : MonoBehaviour
 
         //initNickname.ExitToLeft();
 
+        events.Add(new DoAfterTimeout(1, () =>
+        {
+            lobby.ReceiveCommand(new List<Command>() { new Command(Action.CONFIRMREADY) });
+        }));
+
+        events.Add(new DoAfterTimeout(5, () =>
+        {
+            game.ReceiveCommand(new List<Command>() { new Command(Action.YOURTURN) });
+            //game.ReceiveCommand(new List<Command>() { new Command(Action.VICTORY) });
+            //networkBehaviour.flowHandler.ServerDisconnected();
+        }));
+
 
     }
-    bool done1 = false;
-    bool done2 = false;
     void Update()
     {
-        if (Time.time > 1 && !done1)
+        foreach (var ev in events)
         {
-            //initNickname.EnterFromRight();
-            lobby.ReceiveCommand(new List<Command>() { new Command(Action.CONFIRMREADY) });
-            game.ReceiveCommand(new List<Command>() { new Command(Action.YOURTURN) });
-            game.ReceiveCommand(new List<Command>() { new Command(Action.VICTORY) });
-            done1 = true;
-        }
-        if (Time.time > 2 && !done2)
-        {
-            networkBehaviour.flowHandler.ServerDisconnected();
-            done2 = true;
+            ev.Update(Time.deltaTime);
         }
     }
 }

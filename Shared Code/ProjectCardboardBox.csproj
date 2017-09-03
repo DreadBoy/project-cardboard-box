@@ -46,6 +46,7 @@
     <Compile Include="Colours.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Chip.cs" />
+    <Compile Include="DoAfterTimeout.cs" />
     <Compile Include="LerpHelper.cs" />
     <Compile Include="MessageParser.cs" />
     <Compile Include="MessageType.cs" />

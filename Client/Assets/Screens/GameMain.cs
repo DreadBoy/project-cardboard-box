@@ -162,6 +162,7 @@ Each command consists of one action, followed by one or more multipliers. Multip
                 yourTurnStart = Time.time;
                 sendButton.YourTurn();
                 hint.text = hints[1];
+                UpdateSendButton();
             }
             else if (command.type == ProjectCardboardBox.Action.GAMEOVER)
             {
