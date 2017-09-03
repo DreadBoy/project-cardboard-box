@@ -8,6 +8,7 @@ class Testing : MonoBehaviour
 {
     GameBehaviour game;
     GridBehaviour grid;
+    NetworkBehaviour network;
     MockConnection conn1 = new MockConnection();
     MockConnection conn2 = new MockConnection();
     MockConnection conn3 = new MockConnection();
@@ -25,6 +26,7 @@ class Testing : MonoBehaviour
     {
         game = FindObjectOfType<GameBehaviour>();
         grid = FindObjectOfType<GridBehaviour>();
+        network = FindObjectOfType<NetworkBehaviour>();
 
         grid.GetComponent<PlayerSpawner>().enabled = false;
         grid.GetComponent<PlayerSpawnerMock>().enabled = true;
@@ -38,16 +40,19 @@ class Testing : MonoBehaviour
             conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn2.Player));
         }));
 
-        events.Add(new DoAfterTimeout(3, () =>
+        events.Add(new DoAfterTimeout(1, () =>
         {
             conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.Player));
         }));
 
-        events.Add(new DoAfterTimeout(3.5f, () =>
+        events.Add(new DoAfterTimeout(1.5f, () =>
         {
-            conn1.HintReceived.RaiseEvent(new HintArgs("TURN:2|MOVE:5", conn1.Player));
-            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.TURN, 2), conn1.Player));
-            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 5), conn1.Player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 2), conn1.Player));
+        }));
+
+        events.Add(new DoAfterTimeout(7, () =>
+        {
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.NEWGAME), conn1.Player));
         }));
     }
 

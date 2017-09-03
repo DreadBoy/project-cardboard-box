@@ -8,7 +8,7 @@ using System;
 
 public class NetworkBehaviour : MonoBehaviour, INetEventListener
 {
-    NetManager server;
+    public NetManager server;
 
     List<SmartConnection> conns = new List<SmartConnection>();
 

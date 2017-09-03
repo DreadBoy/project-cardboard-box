@@ -13,6 +13,7 @@ public class GameBehaviour : MonoBehaviour
 
     LobbyBehaviour lobby;
     GridBehaviour grid;
+    PodiumBehaviour podium;
     NetworkBehaviour networkBehaviour;
 
 
@@ -39,6 +40,7 @@ public class GameBehaviour : MonoBehaviour
     {
         lobby = FindObjectOfType<LobbyBehaviour>();
         grid = FindObjectOfType<GridBehaviour>();
+        podium = FindObjectOfType<PodiumBehaviour>();
         networkBehaviour = FindObjectOfType<NetworkBehaviour>();
     }
 
@@ -76,7 +78,7 @@ public class GameBehaviour : MonoBehaviour
     {
         if(e.command.type == ProjectCardboardBox.Action.NEWGAME)
         {
-            ChangeToState_Game();
+            ChangeToState_NewGame();
             return;
         }
         else if(e.command.type == ProjectCardboardBox.Action.ENDTURN)
@@ -155,9 +157,12 @@ public class GameBehaviour : MonoBehaviour
     {
         networkBehaviour.DropAllConnections();
         foreach (var player in players)
-            grid.RemovePlayerFromGrid(player);
+            podium.RemovePlayerFromPodium(player);
         players.Clear();
         connections.Clear();
+        state = State.lobby;
+        changeStateEvent.RaiseEvent(new ChangeStateArgs(state));
+        lastPlayerDisconnected.RaiseEvent(null);
     }
 
     public void ChangeToState_Game()

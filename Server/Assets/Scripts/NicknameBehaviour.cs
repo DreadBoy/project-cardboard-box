@@ -47,7 +47,14 @@ public class NicknameBehaviour : MonoBehaviour
         }
         if(player.state == State.ending)
         {
-            canvas.GetComponentInChildren<Text>().text = "";
+            rectTransform.position = new Vector3(position.x, 3.5f + position.y, position.z);
+            rectTransform.rotation = player.transform.rotation * Quaternion.Euler(0, 180, 0);
+            rectTransform.localScale = Vector3.one * 0.6f;
         }
+    }
+
+    public void DestroyNickname()
+    {
+        Destroy(canvas.gameObject);
     }
 }

@@ -191,6 +191,7 @@ public class PlayerBehaviour : MonoBehaviour
     {
         Destroy(gameObject);
         hintBehaviour.DestroyHint();
+        nicknameBehaviour.DestroyNickname();
     }
 
     public bool MovePlayer(int number)
