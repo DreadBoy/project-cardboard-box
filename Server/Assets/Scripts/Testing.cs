@@ -45,15 +45,17 @@ class Testing : MonoBehaviour
             conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.READY), conn1.Player));
         }));
 
-        events.Add(new DoAfterTimeout(1.5f, () =>
+        events.Add(new DoAfterTimeout(4, () =>
         {
-            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.MOVE, 2), conn1.Player));
+            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.ENDTURN), conn1.Player));
         }));
 
         events.Add(new DoAfterTimeout(7, () =>
         {
-            conn1.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.NEWGAME), conn1.Player));
+            conn2.CommandReceived.RaiseEvent(new CommandArgs(new Command(Action.ENDTURN), conn2.Player));
         }));
+
+
     }
 
     void Update()

@@ -15,6 +15,7 @@ public class GameBehaviour : MonoBehaviour
     GridBehaviour grid;
     PodiumBehaviour podium;
     NetworkBehaviour networkBehaviour;
+    PlayersTurn playersTurn;
 
 
     public enum State
@@ -42,6 +43,7 @@ public class GameBehaviour : MonoBehaviour
         grid = FindObjectOfType<GridBehaviour>();
         podium = FindObjectOfType<PodiumBehaviour>();
         networkBehaviour = FindObjectOfType<NetworkBehaviour>();
+        playersTurn = FindObjectOfType<PlayersTurn>();
     }
 
     public bool PlayerConnect(INetworkConnection connection)
@@ -68,26 +70,27 @@ public class GameBehaviour : MonoBehaviour
         connection.ColourReceived.Event += ColourReceived_Event;
         connection.NicknameReceived.Event += NicknameReceived_Event;
 
-		if (players.Count == 1)
-			firstPlayerConnected.RaiseEvent (new EventArgs ());
+        if (players.Count == 1)
+            firstPlayerConnected.RaiseEvent(new EventArgs());
 
         return player;
     }
 
     private void CommandReceived_Event(object sender, CommandArgs e)
     {
-        if(e.command.type == ProjectCardboardBox.Action.NEWGAME)
+        if (e.command.type == ProjectCardboardBox.Action.NEWGAME)
         {
             ChangeToState_NewGame();
             return;
         }
-        else if(e.command.type == ProjectCardboardBox.Action.ENDTURN)
+        else if (e.command.type == ProjectCardboardBox.Action.ENDTURN)
         {
             var index = players.IndexOf(e.player);
             index++;
             if (index >= connections.Count)
                 index = 0;
             connections[index].Send(MessageType.Command, new Command(ProjectCardboardBox.Action.YOURTURN).ToString());
+            playersTurn.NewTurn(connections[index].Player.name);
         }
         e.player.ReceiveCommand(e.command);
     }
@@ -128,8 +131,13 @@ public class GameBehaviour : MonoBehaviour
         {
             state = State.lobby;
             changeStateEvent.RaiseEvent(new ChangeStateArgs(state));
-			lastPlayerDisconnected.RaiseEvent (new EventArgs ());
+            lastPlayerDisconnected.RaiseEvent(new EventArgs());
         }
+    }
+
+    private void Start()
+    {
+        changeStateEvent.RaiseEvent(new ChangeStateArgs(state));
     }
 
     void Update()
@@ -181,7 +189,7 @@ public class GameBehaviour : MonoBehaviour
         }
         playerOnTurn = players[0];
         connections[0].Send(MessageType.Command, new Command(ProjectCardboardBox.Action.YOURTURN).ToString());
-
+        playersTurn.NewTurn(connections[0].Player.name);
     }
 
     internal void PlayerDied(PlayerBehaviour player)

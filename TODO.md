@@ -4,6 +4,7 @@
 - [ ] Text "Skip" looks very much like "Ship"
 - [ ] Some devices have messed up UI. Join button was invisible (but operational) and buttons for assembled command were smaller
 - [x] If you assemble command during waiting, it is not rechecked when it's your turn
+- [ ] If client disconects while it's his turn, server doesn't switch to next one
 
 ## Planned features
 - [x] When player dies or server closes, client should change screen and display "game over" screen
