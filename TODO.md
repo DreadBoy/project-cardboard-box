@@ -19,13 +19,13 @@
 - [x] When server is launched, display some introduction and QR code. 
 - [x] When first player joins, animates QR code to both left and right of title screen and hide text
 - [ ] Display all color cards near top edge of screen on server and change background (which one?) of client's chips/sections/buttons. 
-- [ ] When client is waiting for a game longer then 10 seconds, display little "Help?" button.
-- [ ] When "Help?" button is clicked, show dialog, explaning that there's PC game and common troubleshooting
+- [x] When client is waiting for a game longer then 10 seconds, display little "Help?" button.
+- [x] When "Help?" button is clicked, show dialog, explaning that there's PC game and common troubleshooting
 
 ## Limits
 Limit number of players that can play at one time. Lobby and podium currently have hardcoded positions for players, either do this better or limit number of players. If limit is reached, clients should display error message.
 
-## Indicate player's turn
+## Indicate player's turn [x]
 It would be nice if server briefly displayed alert when it's next player's turn. It should also be obvious on first glance whose turn it is.
 
 ## Screens for name and colour [x]

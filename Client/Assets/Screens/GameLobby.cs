@@ -18,6 +18,11 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
     public Button readyButton;
     public Button notreadyButton;
 
+    public GameObject helpGroup;
+
+    float searchTimeoutMax = 1;
+    float searchTimeout = 0;
+
     public override void OnEnable()
     {
         base.OnEnable();
@@ -32,12 +37,15 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
     public override void Start()
     {
         base.Start();
-        status.text = "Searching for match...";
     }
 
     public override void Update()
     {
         base.Update();
+        if (searchTimeout > -1 && searchTimeout < searchTimeoutMax)
+            searchTimeout += Time.deltaTime;
+        if(searchTimeout >= searchTimeoutMax && state == State.Searching)
+            helpGroup.SetActive(true);
     }
 
     public override void OnEnter(ScreenBehaviour from)
@@ -102,10 +110,12 @@ public class GameLobby : ScreenBehaviour, ICommandHandler, IFlowHandler
         {
             case State.Searching:
                 status.text = "Searching for match...";
+                searchTimeout = 0;
                 break;
             case State.Found:
                 status.text = "Match found!";
                 joinButton.gameObject.SetActive(true);
+                searchTimeout = -1;
                 break;
             case State.Joined:
                 status.text = "Ready to go?";
